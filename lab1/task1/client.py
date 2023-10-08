@@ -9,3 +9,6 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as socket:
     socket.connect((HOST, PORT))
     print("Enter a message for the server...")
     socket.send(input().encode('utf-8'))
+
+    serverAnswer = socket.recv(BUFSIZE).decode('utf-8')
+    print(f"Server: {serverAnswer}")
