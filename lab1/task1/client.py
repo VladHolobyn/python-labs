@@ -11,7 +11,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as socket:
         message = input("Your message: ")
         socket.send(message.encode('utf-8'))
 
-        if message == "bye":
+        if message.lower() == "bye":
             break
 
         serverAnswer = socket.recv(BUFSIZE).decode('utf-8')
