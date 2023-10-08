@@ -5,7 +5,17 @@ import time
 
 HOST = '127.0.0.1'
 PORT = 9999
-BUFSIZE = 10
+BUFSIZE = 8
+
+
+def clearBuffer(sock):
+    sock.setblocking(False)
+    try:
+        while sock.recv(BUFSIZE):
+            pass
+    except:
+        sock.setblocking(True)
+
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as serverSocket:
     serverSocket.bind((HOST, PORT))
@@ -15,16 +25,21 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as serverSocket:
     clientSocket, clientAddress = serverSocket.accept()
     print(f'Got a connection from {clientAddress}')
 
-    clientAnswer = clientSocket.recv(BUFSIZE)
-    print(
-        f'Client message: {clientAnswer.decode("utf-8")}  Time: {datetime.datetime.now()}')
+    while True:
+        clientMessage = clientSocket.recv(BUFSIZE)
+        decodedMessage = clientMessage.decode("utf-8")
+        print(f'Message: {decodedMessage} Time: {datetime.datetime.now()}')
 
-    time.sleep(5)
+        if decodedMessage.lower() == "bye":
+            break
 
-    if len(clientAnswer) >= BUFSIZE:
-        clientSocket.send("The message is too long".encode('utf-8'))
-    else:
-        clientSocket.send(clientAnswer)
+        time.sleep(5)
+
+        if len(clientMessage) == BUFSIZE:
+            clientSocket.send("The message is too long".encode('utf-8'))
+            clearBuffer(clientSocket)
+        else:
+            clientSocket.send(clientMessage)
 
     clientSocket.close()
     print(f'{clientAddress} has been disconnected')
