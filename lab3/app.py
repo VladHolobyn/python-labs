@@ -3,7 +3,6 @@ from datetime import datetime
 import os
 
 app = Flask(__name__)
-app.config['TEMPLATES_AUTO_RELOAD'] = True
 
 skills = ["java", "postgres", "spring", "hibernate", "junit", "docker"]
 
