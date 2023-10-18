@@ -2,12 +2,33 @@
 {% block title %}Skills{% endblock %}
 {% block content %}
     <h1>Skills</h1>
-    <ul>
-        <li>Java</li>
-        <li>Postgres</li>
-        <li>Spring</li>
-        <li>Hibernate</li>
-        <li>Docker</li>
-        <li>Junit</li>
-    </ul>
+
+    <div class="card-group" ">
+        <div class="card mb-3 text-center" >
+            <h3 class="card-header">Java</h3>
+            <img class="card-img-top " src="{{url_for('static', filename='images/java.svg')}}" style="width: 5rem; align-self: center;" alt="java">
+        </div>
+        <div class="card mb-3 text-center">
+            <h3 class="card-header">Postgres</h3>
+            <img class="card-img-top " src="{{url_for('static', filename='images/postgres.svg')}}" style="width: 5rem; align-self: center;" alt="java">
+        </div>
+        <div class="card mb-3 text-center">
+            <h3 class="card-header">Spring</h3>
+            <img class="card-img-top " src="{{url_for('static', filename='images/spring.svg')}}" style="width: 5rem; align-self: center;" alt="java">
+        </div>
+        <div class="card mb-3 text-center">
+            <h3 class="card-header">Hibernate</h3>
+            <img class="card-img-top " src="{{url_for('static', filename='images/hibernate.svg')}}" style="width: 5rem; align-self: center;" alt="java">
+        </div>
+        <div class="card mb-3 text-center">
+            <h3 class="card-header">Junit</h3>
+            <img class="card-img-top " src="{{url_for('static', filename='images/junit.svg')}}" style="width: 5rem; align-self: center;" alt="java">
+        </div>
+        <div class="card mb-3 text-center">
+            <h3 class="card-header">Docker</h3>
+            <img class="card-img-top " src="{{url_for('static', filename='images/docker.svg')}}" style="width: 5rem; align-self: center;" alt="java">
+        </div>
+    </div>
+
+    
 {% endblock %}

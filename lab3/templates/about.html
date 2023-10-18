@@ -1,13 +1,21 @@
 {% extends "base.html" %}
 {% block title %}About me{% endblock %}
 {% block content %}
-    <img src="{{ url_for('static', filename='images/user-avatar.png') }}" alt="avatar">
-    <h1>Vladyslav Holobyn</h1>
-    <p>
-        I am a dedicated and enthusiastic software engineering student with a passion for 
-        developing efficient and user-friendly applications. With a solid foundation in programming 
-        languages and problem-solving skills, I am eager to contribute my technical expertise to a 
-        collaborative and innovative team. I enjoy tackling complex challenges and am committed to 
-        continuous learning to stay abreast of the latest technological advancements in the field.
-    </p>
+    <div class="row align-items-center justify-content-center pt-5">
+        <div class="col-4">
+            <img src="{{ url_for('static', filename='images/user-avatar.png') }}" width="250" alt="avatar">
+        </div>
+        <div class="col-6">
+            <h1>Vladyslav Holobyn</h1>
+            <p class="text-primary-emphasis">
+                I am a dedicated and enthusiastic software engineering student with a passion for 
+                developing efficient and user-friendly applications. With a solid foundation in programming 
+                languages and problem-solving skills, I am eager to contribute my technical expertise to a 
+                collaborative and innovative team. I enjoy tackling complex challenges and am committed to 
+                continuous learning to stay abreast of the latest technological advancements in the field.
+            </p>
+        </div>
+    </div>
+    
+    
 {% endblock %}
