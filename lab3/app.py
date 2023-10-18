@@ -3,20 +3,25 @@ from datetime import datetime
 import os
 
 app = Flask(__name__)
+app.config['TEMPLATES_AUTO_RELOAD'] = True
 
+skills = ["java", "postgres", "spring", "hibernate", "junit", "docker"]
 
 @app.route('/')
 @app.route('/about')
-def about():
+def about_page():
     return render_template('about.html', os=os.name, user_agent=request.headers.get('User-Agent'), time=datetime.now())
 
 @app.route('/skills')
-def skills():
-    os.
-    return render_template('skills.html', os=os.name, user_agent=request.headers.get('User-Agent'), time=datetime.now())
+@app.route('/skills/<int:id>')
+def skills_page(id=None):
+    if id is not None and id < len(skills):
+        return render_template('skill.html', skill=skills[id], os=os.name, user_agent=request.headers.get('User-Agent'), time=datetime.now())
+    else:
+        return render_template('skills.html', skills=skills, os=os.name, user_agent=request.headers.get('User-Agent'), time=datetime.now())
 
 @app.route('/contacts')
-def contacts():
+def contacts_page():
     return render_template('contacts.html', os=os.name, user_agent=request.headers.get('User-Agent'), time=datetime.now())
 
 
