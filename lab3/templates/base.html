@@ -6,7 +6,13 @@
     <title>{% block title %}Lab3{% endblock %}</title>
 </head>
 <body>
-    <nav></nav>
+    <nav>
+        <ul>
+            <li><a href="{{ url_for('about') }}">About me</a></li>
+            <li><a href="{{ url_for('skills') }}">Skills</a></li>
+            <li><a href="{{ url_for('contacts') }}">Contacts</a></li>
+        </ul>
+        </nav>
     {% block content %} 
         <h1>Lab 3</h1>
     {% endblock %}
