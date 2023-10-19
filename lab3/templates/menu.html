@@ -1,3 +1,5 @@
+{% set pages = ({"About me": url_for('about_page'),"Skills": url_for('skills_page'), "Contacts": url_for('contacts_page')})	%}
+
 <nav class="navbar navbar-expand-lg bg-dark" data-bs-theme="dark">
     <div class="container-fluid">
       <a class="navbar-brand" href="/">Lab3</a>
@@ -6,15 +8,11 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav">
+          {% for key, value in pages.items() %}
             <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('about_page') }}">About me</a>
+              <a class="nav-link" href="{{value}}">{{key}}</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('skills_page') }}">Skills</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('contacts_page') }}">Contacts</a>
-            </li>
+          {% endfor %}
         </ul>
       </div>
     </div>
