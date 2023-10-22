@@ -25,6 +25,7 @@ def contacts_page():
     return render_template('contacts.html', os=os.name, user_agent=request.headers.get('User-Agent'), time=datetime.now())
 
 
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -55,4 +56,35 @@ def logout():
 def info_page():
     if not session.get("username"):
         return redirect(url_for("login"))
-    return render_template('info.html', username=session.get("username"), os=os.name, user_agent=request.headers.get('User-Agent'), time=datetime.now())
+
+    return render_template('info.html', username=session.get("username"),message=session.pop("cookie_message", None),cookies=request.cookies, os=os.name, user_agent=request.headers.get('User-Agent'), time=datetime.now())
+
+
+@app.route('/cookies', methods=["POST"])
+def add_cookie():
+    key = request.form.get("key")
+    value = request.form.get("value")
+    exp_date = request.form.get("date")
+
+    if key and value and exp_date:
+        response = make_response(redirect(url_for("info_page")))
+        response.set_cookie(key, value, expires=datetime.strptime(exp_date, "%Y-%m-%dT%H:%M"))
+        session["cookie_message"] = {"successfully": True, "text": f"Success! {key} : {value} was added."}
+        return response
+
+    session["cookie_message"] = {"successfully": False, "text": "Failed!"}
+    return redirect(url_for("info_page"))
+
+@app.route('/cookies/delete', methods=["POST"])
+@app.route('/cookies/delete/<key>', methods=["POST"])
+def delete_cookie(key = None):
+    response = make_response(redirect(url_for("info_page")))
+
+    if key:
+        response.delete_cookie(key)
+        session["cookie_message"] = {"successfully": True, "text": f"Success! cookie: {key} was deleted."}
+    else:
+        for key in request.cookies.keys():
+            response.delete_cookie(key)
+    
+    return response
