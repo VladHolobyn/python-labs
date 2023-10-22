@@ -57,7 +57,7 @@ def info_page():
     if not session.get("username"):
         return redirect(url_for("login"))
 
-    return render_template('info.html', username=session.get("username"),message=session.pop("cookie_message", None),cookies=request.cookies, os=os.name, user_agent=request.headers.get('User-Agent'), time=datetime.now())
+    return render_template('info.html', username=session.get("username"),message=session.pop("message", None),cookies=request.cookies, os=os.name, user_agent=request.headers.get('User-Agent'), time=datetime.now())
 
 
 @app.route('/cookies', methods=["POST"])
@@ -69,10 +69,10 @@ def add_cookie():
     if key and value and exp_date:
         response = make_response(redirect(url_for("info_page")))
         response.set_cookie(key, value, expires=datetime.strptime(exp_date, "%Y-%m-%dT%H:%M"))
-        session["cookie_message"] = {"successfully": True, "text": f"Success! {key} : {value} was added."}
+        session["message"] = {"successfully": True, "text": f"Success! {key} : {value} was added."}
         return response
 
-    session["cookie_message"] = {"successfully": False, "text": "Failed!"}
+    session["message"] = {"successfully": False, "text": "Failed!"}
     return redirect(url_for("info_page"))
 
 @app.route('/cookies/delete', methods=["POST"])
@@ -82,9 +82,34 @@ def delete_cookie(key = None):
 
     if key:
         response.delete_cookie(key)
-        session["cookie_message"] = {"successfully": True, "text": f"Success! cookie: {key} was deleted."}
+        session["message"] = {"successfully": True, "text": f"Success! cookie: {key} was deleted."}
     else:
         for key in request.cookies.keys():
             response.delete_cookie(key)
     
     return response
+
+@app.route('/change-password', methods=["POST"])
+def change_password():
+    old = request.form.get("old")
+    new = request.form.get("new")
+    username = session.get("username")
+
+    json_url = os.path.join(os.path.realpath(os.path.dirname(__file__)), "static/data", "login.json")
+    file =  open(json_url, "r")
+    data = json.load(file)
+    file.close()    
+    users = data.get("users")
+
+    index = next((i for i, user in enumerate(users) if user["name"] == username), -1)
+
+    if index >= 0 and users[index]["password"] == old:
+        users[index]["password"] = new
+        file = open(json_url, "w+")
+        file.write(json.dumps(data))
+        file.close() 
+        session["message"] = {"successfully": True, "text": "Password changed!"}
+    else:
+        session["message"] = {"successfully": False, "text": "Failed!"}
+
+    return redirect(url_for("info_page"))

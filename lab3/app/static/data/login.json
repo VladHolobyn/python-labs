@@ -1,8 +1,1 @@
-{
-    "users": [
-        {
-            "name": "user",
-            "password": "user"
-        }
-    ]
-}
+{"users": [{"name": "user", "password": "user1"}]}

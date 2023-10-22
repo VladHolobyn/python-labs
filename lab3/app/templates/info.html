@@ -3,9 +3,14 @@
 {% block content %}
     <div class="row align-items-center justify-content-between" style="margin-top: 100px;">
         <h1 class="col-auto">Hello, {{username}}!</h1>
-        <form class="col-auto" method="POST" action="./logout" >
-            <input type="submit" class="btn btn-danger" value="Log out"/>
-        </form>
+        <div class="col-auto row">
+            <form class="col-auto" method="POST" action="./logout" >
+                <input type="submit" class="btn btn-danger" value="Log out"/>
+            </form>
+            <button type="button" class="col-auto btn btn-warning" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                Change password
+            </button>
+        </div>
     </div>
     <div style="margin-top: 80px;">
             {% if message %}
@@ -73,4 +78,29 @@
           {% endfor %}
         </tbody>
       </table>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Change password form</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form action="./change-password" method="POST">
+            <div class="form-group">
+                <label class="form-label" for="old">Old password</label>
+                <input class="form-control" type="password" id="old" name="old">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="new">New password</label>
+                <input class="form-control" type="password" id="new" name="new">
+            </div>
+            <button type="submit" class="btn btn-primary" style="margin-top: 25px; width: 100%;">Save changes</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
 {% endblock %}
