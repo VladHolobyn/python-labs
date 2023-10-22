@@ -22,3 +22,12 @@ def skills_page(id=None):
 @app.route('/contacts')
 def contacts_page():
     return render_template('contacts.html', os=os.name, user_agent=request.headers.get('User-Agent'), time=datetime.now())
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    return render_template('login.html', os=os.name, user_agent=request.headers.get('User-Agent'), time=datetime.now())
+
+@app.route('/info')
+def info_page():
+    return render_template('info.html', os=os.name, user_agent=request.headers.get('User-Agent'), time=datetime.now())

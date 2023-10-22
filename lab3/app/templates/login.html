@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
+{% block content %}
+<div class="row justify-content-md-center">
+    <form method="POST" style="max-width: 500px; margin-top: 150px;">
+        <h1 class="text-center">Login</h1>
+        <div class="form-group">
+            <label class="form-label" for="name">User name</label>
+            <input class="form-control" type="text" id="name" name="name">
+        </div>
+        <div class="form-group">
+            <label class="form-label" for="inputPassword">Password</label>
+            <input class="form-control" type="password" id="inputPassword" name="password">
+        </div>
+        <button type="submit" class="btn btn-primary" style="margin-top: 25px; width: 100%;">Sign in</button>
+    </form>
+</div>
+{% endblock %}
