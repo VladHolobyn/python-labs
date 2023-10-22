@@ -1,8 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Login{% endblock %}
 {% block content %}
-<div class="row justify-content-md-center">
-    <form method="POST" style="max-width: 500px; margin-top: 150px;">
+    <form method="POST" style="max-width: 500px; margin: 150px auto 0;">
         <h1 class="text-center">Login</h1>
         <div class="form-group">
             <label class="form-label" for="name">User name</label>
@@ -14,5 +13,9 @@
         </div>
         <button type="submit" class="btn btn-primary" style="margin-top: 25px; width: 100%;">Sign in</button>
     </form>
-</div>
+    {% if message %}
+        <div class="alert alert-danger" role="alert" style="max-width: 500px; margin: 50px auto 0;">
+            {{message}}
+        </div>
+    {% endif %}
 {% endblock %}
