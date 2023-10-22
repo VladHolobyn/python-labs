@@ -1,5 +1,10 @@
 {% extends "base.html" %}
 {% block title %}Info{% endblock %}
 {% block content %}
-    <h1>Hello, {{username}}!</h1>
+    <div style="margin-top: 100px;">
+        <h1>Hello, {{username}}!</h1>
+    </div>
+    <form method="POST" action="./logout">
+        <input type="submit" class="btn btn-danger" value="Log out"/>
+    </form>
 {% endblock %}

@@ -46,6 +46,13 @@ def login():
 
     return render_template('login.html', message=session.pop("error_message", None), os=os.name, user_agent=request.headers.get('User-Agent'), time=datetime.now())
 
+@app.route('/logout', methods=["POST"])
+def logout():
+    session.clear()
+    return redirect(url_for("login"))
+
 @app.route('/info')
 def info_page():
+    if not session.get("username"):
+        return redirect(url_for("login"))
     return render_template('info.html', username=session.get("username"), os=os.name, user_agent=request.headers.get('User-Agent'), time=datetime.now())
