@@ -4,6 +4,7 @@ import os
 from app import app
 import json
 
+JSON_FILE = os.path.join(app.static_folder, 'data/login.json')
 
 skills = ["java", "postgres", "spring", "hibernate", "junit", "docker"]
 
@@ -32,8 +33,7 @@ def login():
         username = request.form.get("name")
         password = request.form.get("password")
 
-        json_url = os.path.join(os.path.realpath(os.path.dirname(__file__)), "static/data", "login.json")
-        with open(json_url) as f:
+        with open(JSON_FILE) as f:
             users = json.load(f).get("users")
             if any(user["name"] == username and user["password"] == password for user in users): 
                 session["username"] = username
@@ -95,8 +95,7 @@ def change_password():
     new = request.form.get("new")
     username = session.get("username")
 
-    json_url = os.path.join(os.path.realpath(os.path.dirname(__file__)), "static/data", "login.json")
-    file =  open(json_url, "r")
+    file =  open(JSON_FILE, "r")
     data = json.load(file)
     file.close()    
     users = data.get("users")
@@ -105,7 +104,7 @@ def change_password():
 
     if index >= 0 and users[index]["password"] == old:
         users[index]["password"] = new
-        file = open(json_url, "w+")
+        file = open(JSON_FILE, "w+")
         file.write(json.dumps(data))
         file.close() 
         session["message"] = {"successfully": True, "text": "Password changed!"}
