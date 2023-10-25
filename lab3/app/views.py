@@ -35,6 +35,7 @@ def login():
     if  form.validate_on_submit(): 
         username = form.name.data
         password = form.password.data
+        remember = form.remember.data
 
         with open(JSON_FILE) as f:
             users = json.load(f).get("users")
