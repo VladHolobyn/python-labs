@@ -13,12 +13,6 @@
         </div>
     </div>
     <div style="margin-top: 80px;">
-            {% if message %}
-             <div class="alert alert-dismissible {{ 'alert-success' if message.successfully else 'alert-danger' }}">
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                {{ message.text }}
-              </div>
-            {% endif %}
             <div class="row align-items-center justify-content-end">
                 <form  method="POST" action="{{url_for('add_cookie')}}" class="col-auto align-items-center row">
                     <div class="col-auto">
@@ -49,11 +43,8 @@
                    </button>
                 </form>
             </div>
-
     </div>
-
-
-    <table class="table">
+    <table class="table" style="word-break: break-word;">
         <thead>
           <tr>
             <th scope="col">Key</th>
