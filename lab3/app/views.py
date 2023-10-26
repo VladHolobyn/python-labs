@@ -2,7 +2,7 @@ from flask import render_template, request, redirect, url_for, make_response, se
 from datetime import datetime
 import os
 from app import app
-from app.forms import LoginForm
+from app.forms import LoginForm, ChangePasswordForm
 import json
 
 JSON_FILE = os.path.join(app.static_folder, 'data/login.json')
@@ -65,10 +65,12 @@ def logout():
 
 @app.route('/info')
 def info_page():
+    form = ChangePasswordForm()
+
     if "username" not in session:
         return redirect(url_for("login"))
 
-    return render_template('info.html', username=session.get("username"), cookies=request.cookies)
+    return render_template('info.html', username=session.get("username"), cookies=request.cookies, form=form)
 
 
 @app.route('/cookies', methods=["POST"])
@@ -102,24 +104,29 @@ def delete_cookie(key = None):
 
 @app.route('/change-password', methods=["POST"])
 def change_password():
-    old = request.form.get("old")
-    new = request.form.get("new")
-    username = session.get("username")
+    form = ChangePasswordForm()
 
-    file =  open(JSON_FILE, "r")
-    data = json.load(file)
-    file.close()    
-    users = data.get("users")
+    if form.validate_on_submit():
+        old = form.old_password.data
+        new = form.new_password.data
+        username = session.get("username")
 
-    index = next((i for i, user in enumerate(users) if user.get("name") == username), -1)
+        file =  open(JSON_FILE, "r")
+        data = json.load(file)
+        file.close()    
+        users = data.get("users")
 
-    if index >= 0 and users[index].get("password") == old:
-        users[index]["password"] = new
-        file = open(JSON_FILE, "w+")
-        file.write(json.dumps(data))
-        file.close() 
-        flash("Password changed!", category="success")
+        index = next((i for i, user in enumerate(users) if user.get("name") == username), -1)
+
+        if index >= 0 and users[index].get("password") == old:
+            users[index]["password"] = new
+            file = open(JSON_FILE, "w+")
+            file.write(json.dumps(data))
+            file.close() 
+            flash("Password changed!", category="success")
+        else:
+            flash("Failed!", category="danger")
     else:
-        flash("Failed!", category="danger")
-
+        flash("Validation error!", category="danger")
+    
     return redirect(url_for("info_page"))

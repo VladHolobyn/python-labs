@@ -11,3 +11,15 @@ class LoginForm(FlaskForm):
         ])
     remember = BooleanField(label="Remember me")
     submit = SubmitField(label="Sign in")
+
+
+class ChangePasswordForm(FlaskForm):
+    old_password = PasswordField(label='Old password', validators=[
+            DataRequired("Old password is required"), 
+            Length(min=4, max=10, message="Min length - 4, max - 10 symbols")
+        ])
+    new_password = PasswordField(label='New password', validators=[
+            DataRequired("New password is required"), 
+            Length(min=4, max=10, message="Min length - 4, max - 10 symbols")
+        ])
+    submit = SubmitField(label="Save changes")
