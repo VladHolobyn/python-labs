@@ -27,8 +27,7 @@
         {% endblock %}
     </div>
 
-    {% include 'footer.html' %}
-
+    {% block footer %}{% endblock %}
     <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
 </body>
 </html>

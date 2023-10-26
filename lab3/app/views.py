@@ -18,18 +18,22 @@ def about_page():
 @app.route('/skills/<int:id>')
 def skills_page(id=None):
     if id is not None and id < len(skills):
-        return render_template('skill.html', skill=skills[id], os=os.name, user_agent=request.headers.get('User-Agent'), time=datetime.now())
+        return render_template('skill.html', skill=skills[id])
     else:
-        return render_template('skills.html', skills=skills, os=os.name, user_agent=request.headers.get('User-Agent'), time=datetime.now())
+        return render_template('skills.html', skills=skills)
 
 @app.route('/contacts')
 def contacts_page():
-    return render_template('contacts.html', os=os.name, user_agent=request.headers.get('User-Agent'), time=datetime.now())
+    return render_template('contacts.html')
 
 
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+
+    if"username" in session:
+        return redirect(url_for("info_page"))   
+    
     form = LoginForm()
 
     if  form.validate_on_submit(): 
@@ -51,10 +55,7 @@ def login():
             flash("Wrong data! Try again!", category="danger")
             return redirect(url_for("login"))
     
-    if session.get("username"):
-        return redirect(url_for("info_page"))   
-
-    return render_template('login.html',form=form, os=os.name, user_agent=request.headers.get('User-Agent'), time=datetime.now())
+    return render_template('login.html', form=form)
 
 @app.route('/logout', methods=["POST"])
 def logout():
@@ -64,10 +65,10 @@ def logout():
 
 @app.route('/info')
 def info_page():
-    if not session.get("username"):
+    if "username" not in session:
         return redirect(url_for("login"))
 
-    return render_template('info.html', username=session.get("username"),cookies=request.cookies, os=os.name, user_agent=request.headers.get('User-Agent'), time=datetime.now())
+    return render_template('info.html', username=session.get("username"), cookies=request.cookies)
 
 
 @app.route('/cookies', methods=["POST"])
@@ -110,9 +111,9 @@ def change_password():
     file.close()    
     users = data.get("users")
 
-    index = next((i for i, user in enumerate(users) if user["name"] == username), -1)
+    index = next((i for i, user in enumerate(users) if user.get("name") == username), -1)
 
-    if index >= 0 and users[index]["password"] == old:
+    if index >= 0 and users[index].get("password") == old:
         users[index]["password"] = new
         file = open(JSON_FILE, "w+")
         file.write(json.dumps(data))
