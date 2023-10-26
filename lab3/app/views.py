@@ -39,13 +39,17 @@ def login():
 
         with open(JSON_FILE) as f:
             users = json.load(f).get("users")
-            if any(user["name"] == username and user["password"] == password for user in users): 
-                session["username"] = username
-                flash("Logged in successfully!!", category="success")
-                return redirect(url_for("info_page"))
-            else:
-                flash("Wrong data! Try again!", category="danger")
-                return redirect(url_for("login"))
+            if any(user.get("name") == username and user.get("password") == password for user in users): 
+                if remember:
+                    session["username"] = username
+                    flash("Logged in successfully!!", category="success")
+                    return redirect(url_for("info_page"))
+                
+                flash("Logged in successfully to about!!", category="success")
+                return redirect(url_for("about_page"))
+
+            flash("Wrong data! Try again!", category="danger")
+            return redirect(url_for("login"))
     
     if session.get("username"):
         return redirect(url_for("info_page"))   
