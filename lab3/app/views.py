@@ -1,7 +1,8 @@
-from flask import render_template, request, redirect, url_for, make_response, session
+from flask import render_template, request, redirect, url_for, make_response, session, flash
 from datetime import datetime
 import os
 from app import app
+from app.forms import LoginForm, ChangePasswordForm
 import json
 
 JSON_FILE = os.path.join(app.static_folder, 'data/login.json')
@@ -17,47 +18,60 @@ def about_page():
 @app.route('/skills/<int:id>')
 def skills_page(id=None):
     if id is not None and id < len(skills):
-        return render_template('skill.html', skill=skills[id], os=os.name, user_agent=request.headers.get('User-Agent'), time=datetime.now())
+        return render_template('skill.html', skill=skills[id])
     else:
-        return render_template('skills.html', skills=skills, os=os.name, user_agent=request.headers.get('User-Agent'), time=datetime.now())
+        return render_template('skills.html', skills=skills)
 
 @app.route('/contacts')
 def contacts_page():
-    return render_template('contacts.html', os=os.name, user_agent=request.headers.get('User-Agent'), time=datetime.now())
+    return render_template('contacts.html')
 
 
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    if request.method == 'POST':
-        username = request.form.get("name")
-        password = request.form.get("password")
+
+    if"username" in session:
+        return redirect(url_for("info_page"))   
+    
+    form = LoginForm()
+
+    if  form.validate_on_submit(): 
+        username = form.name.data
+        password = form.password.data
+        remember = form.remember.data
 
         with open(JSON_FILE) as f:
             users = json.load(f).get("users")
-            if any(user["name"] == username and user["password"] == password for user in users): 
-                session["username"] = username
-                return redirect(url_for("info_page"))
-            else:
-                session["error_message"] = "Wrong data! Try again!"
-                return redirect(url_for("login"))
-    
-    if session.get("username"):
-        return redirect(url_for("info_page"))   
+            if any(user.get("name") == username and user.get("password") == password for user in users): 
+                if remember:
+                    session["username"] = username
+                    flash("Logged in successfully!!", category="success")
+                    return redirect(url_for("info_page"))
+                
+                flash("Logged in successfully to about!!", category="success")
+                return redirect(url_for("about_page"))
 
-    return render_template('login.html', message=session.pop("error_message", None), os=os.name, user_agent=request.headers.get('User-Agent'), time=datetime.now())
+            flash("Wrong data! Try again!", category="danger")
+            return redirect(url_for("login"))
+    
+    return render_template('login.html', form=form)
 
 @app.route('/logout', methods=["POST"])
 def logout():
     session.clear()
+    flash("Logged out successfully!!", category="success")
     return redirect(url_for("login"))
 
 @app.route('/info')
 def info_page():
-    if not session.get("username"):
+    form = ChangePasswordForm()
+
+    if "username" not in session:
+        flash("You need to login first!", category="danger")
         return redirect(url_for("login"))
 
-    return render_template('info.html', username=session.get("username"),message=session.pop("message", None),cookies=request.cookies, os=os.name, user_agent=request.headers.get('User-Agent'), time=datetime.now())
+    return render_template('info.html', username=session.get("username"), cookies=request.cookies, form=form)
 
 
 @app.route('/cookies', methods=["POST"])
@@ -69,10 +83,10 @@ def add_cookie():
     if key and value and exp_date:
         response = make_response(redirect(url_for("info_page")))
         response.set_cookie(key, value, expires=datetime.strptime(exp_date, "%Y-%m-%dT%H:%M"))
-        session["message"] = {"successfully": True, "text": f"Success! {key} : {value} was added."}
+        flash(f"Success! {key} : {value} was added.", category="success")
         return response
 
-    session["message"] = {"successfully": False, "text": "Failed!"}
+    flash("Failed!", category="danger")
     return redirect(url_for("info_page"))
 
 @app.route('/cookies/delete', methods=["POST"])
@@ -82,7 +96,7 @@ def delete_cookie(key = None):
 
     if key:
         response.delete_cookie(key)
-        session["message"] = {"successfully": True, "text": f"Success! cookie: {key} was deleted."}
+        flash(f"Success! Cookie: {key} was deleted.", category="success")
     else:
         for key in request.cookies.keys():
             response.delete_cookie(key)
@@ -91,24 +105,29 @@ def delete_cookie(key = None):
 
 @app.route('/change-password', methods=["POST"])
 def change_password():
-    old = request.form.get("old")
-    new = request.form.get("new")
-    username = session.get("username")
+    form = ChangePasswordForm()
 
-    file =  open(JSON_FILE, "r")
-    data = json.load(file)
-    file.close()    
-    users = data.get("users")
+    if form.validate_on_submit():
+        old = form.old_password.data
+        new = form.new_password.data
+        username = session.get("username")
 
-    index = next((i for i, user in enumerate(users) if user["name"] == username), -1)
+        file =  open(JSON_FILE, "r")
+        data = json.load(file)
+        file.close()    
+        users = data.get("users")
 
-    if index >= 0 and users[index]["password"] == old:
-        users[index]["password"] = new
-        file = open(JSON_FILE, "w+")
-        file.write(json.dumps(data))
-        file.close() 
-        session["message"] = {"successfully": True, "text": "Password changed!"}
+        index = next((i for i, user in enumerate(users) if user.get("name") == username), -1)
+
+        if index >= 0 and users[index].get("password") == old:
+            users[index]["password"] = new
+            file = open(JSON_FILE, "w+")
+            file.write(json.dumps(data))
+            file.close() 
+            flash("Password changed!", category="success")
+        else:
+            flash("Failed!", category="danger")
     else:
-        session["message"] = {"successfully": False, "text": "Failed!"}
-
+        flash("Validation error!", category="danger")
+    
     return redirect(url_for("info_page"))

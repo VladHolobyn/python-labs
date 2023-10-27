@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "_render-field.html" import render_field %}
 {% block title %}Info{% endblock %}
 {% block content %}
     <div class="row align-items-center justify-content-between" style="margin-top: 100px;">
@@ -13,12 +14,6 @@
         </div>
     </div>
     <div style="margin-top: 80px;">
-            {% if message %}
-             <div class="alert alert-dismissible {{ 'alert-success' if message.successfully else 'alert-danger' }}">
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                {{ message.text }}
-              </div>
-            {% endif %}
             <div class="row align-items-center justify-content-end">
                 <form  method="POST" action="{{url_for('add_cookie')}}" class="col-auto align-items-center row">
                     <div class="col-auto">
@@ -49,11 +44,8 @@
                    </button>
                 </form>
             </div>
-
     </div>
-
-
-    <table class="table">
+    <table class="table" style="word-break: break-word;">
         <thead>
           <tr>
             <th scope="col">Key</th>
@@ -89,15 +81,14 @@
         </div>
         <div class="modal-body">
           <form action="{{url_for('change_password')}}" method="POST">
+            {{ form.csrf_token }}
             <div class="form-group">
-                <label class="form-label" for="old">Old password</label>
-                <input class="form-control" type="password" id="old" name="old">
+              {{ render_field(form.old_password, class="form-control") }}
             </div>
             <div class="form-group">
-                <label class="form-label" for="new">New password</label>
-                <input class="form-control" type="password" id="new" name="new">
+              {{ render_field(form.new_password, class="form-control") }}
             </div>
-            <button type="submit" class="btn btn-primary" style="margin-top: 25px; width: 100%;">Save changes</button>
+            {{ render_field(form.submit, class="btn btn-primary", style="margin-top: 25px; width: 100%;") }}
           </form>
         </div>
       </div>
