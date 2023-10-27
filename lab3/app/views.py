@@ -68,6 +68,7 @@ def info_page():
     form = ChangePasswordForm()
 
     if "username" not in session:
+        flash("You need to login first!", category="danger")
         return redirect(url_for("login"))
 
     return render_template('info.html', username=session.get("username"), cookies=request.cookies, form=form)
