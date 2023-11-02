@@ -2,8 +2,10 @@ from flask import render_template, request, redirect, url_for, make_response, se
 from datetime import datetime
 import os
 from app import app
-from app.forms import LoginForm, ChangePasswordForm
+from app.forms import LoginForm, ChangePasswordForm, TodoForm
 import json
+from app import db
+from app import Todo
 
 JSON_FILE = os.path.join(app.static_folder, 'data/login.json')
 
@@ -131,3 +133,31 @@ def change_password():
         flash("Validation error!", category="danger")
     
     return redirect(url_for("info_page"))
+
+
+@app.route('/todos')
+def todos():
+    todo_list = Todo.query.all()
+    return render_template("todo.html", todo_list=todo_list, form=TodoForm())
+ 
+@app.route("/todos/add", methods=["POST"])
+def add_todo():
+    form=TodoForm()
+    new_todo = Todo(title=form.title.data, due_date=form.due_date.data, complete=False)
+    db.session.add(new_todo)
+    db.session.commit()
+    return redirect(url_for("todos"))
+ 
+@app.route("/todos/update/<int:id>")
+def update_todo(id):
+    todo = Todo.query.get_or_404(id)
+    todo.complete = not todo.complete   
+    db.session.commit()
+    return redirect(url_for("todos"))
+ 
+@app.route("/todos/delete/<int:id>")
+def delete_todo(id):
+    todo = Todo.query.get_or_404(id)
+    db.session.delete(todo)
+    db.session.commit()
+    return redirect(url_for("todos"))
