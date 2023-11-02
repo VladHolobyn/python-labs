@@ -4,6 +4,8 @@ import os
 from app import app
 from app.forms import LoginForm, ChangePasswordForm
 import json
+from app import db
+from app import Todo
 
 JSON_FILE = os.path.join(app.static_folder, 'data/login.json')
 
@@ -131,3 +133,32 @@ def change_password():
         flash("Validation error!", category="danger")
     
     return redirect(url_for("info_page"))
+
+
+@app.route('/todos')
+def todos():
+    todo_list = db.session.query(Todo).all()
+    return render_template("todo.html", todo_list=todo_list)
+ 
+ 
+# @app.route("/add", methods=["POST"])
+# def add():
+#     title = request.form.get("title")
+#     new_todo = Todo(title=title, complete=False)
+#     db.session.add(new_todo)
+#     db.session.commit()
+#     return redirect(url_for("home"))
+ 
+# @app.route("/update/<int:todo_id>")
+# def update(todo_id):
+#     todo = db.session.query(Todo).filter(Todo.id == todo_id).first()
+#     todo.complete = not todo.complete
+#     db.session.commit()
+#     return redirect(url_for("home"))
+ 
+# @app.route("/delete/<int:todo_id>")
+# def delete(todo_id):
+#     todo = db.session.query(Todo).filter(Todo.id == todo_id).first()
+#     db.session.delete(todo)
+#     db.session.commit()
+#     return redirect(url_for("home"))
