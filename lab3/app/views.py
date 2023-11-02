@@ -5,7 +5,7 @@ from app import app
 from app.forms import LoginForm, ChangePasswordForm, TodoForm
 import json
 from app import db
-from app import Todo
+from app.models import Todo
 
 JSON_FILE = os.path.join(app.static_folder, 'data/login.json')
 
