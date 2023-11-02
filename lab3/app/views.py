@@ -182,3 +182,9 @@ def feedbacks():
     feedbacks = Feedback.query.all()
     return render_template("feedbacks.html", feedbacks=feedbacks, form=form)
  
+@app.route("/feedbacks/delete/<int:id>")
+def delete_feedback(id):
+    feedback = Feedback.query.get_or_404(id)
+    db.session.delete(feedback)
+    db.session.commit()
+    return redirect(url_for("feedbacks"))

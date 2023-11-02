@@ -43,6 +43,7 @@
                     <h6 class="card-subtitle mb-2 text-muted">{{feedback.user_email}}</h6>
                     <p class="card-text">{{feedback.text}}</p>
                     <p class="card-subtitle mb-2 text-muted">{{feedback.date.strftime('%Y-%m-%d %H:%M:%S')}}</p>
+                    <a class="card-link" href="{{url_for('delete_feedback', id=feedback.id)}}">Delete</a>
                 </div>
             </div>
         {% endfor %}
