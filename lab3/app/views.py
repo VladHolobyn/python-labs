@@ -168,11 +168,17 @@ def feedbacks():
     form=FeedbackForm()
 
     if form.validate_on_submit():
-        new_feedback = Feedback(user_email=form.email.data, text=form.text.data, date=datetime.now())
+        new_feedback = Feedback(
+            topic= form.topic.data,
+            text=form.text.data,
+            mark=form.mark.data,
+            user_email=form.email.data,  
+            date=datetime.now()
+        )
         db.session.add(new_feedback)
         db.session.commit()
         return redirect(url_for("feedbacks"))
 
     feedbacks = Feedback.query.all()
-    return render_template("feedbacks.html", feedbacks=feedbacks, form=FeedbackForm())
+    return render_template("feedbacks.html", feedbacks=feedbacks, form=form)
  
