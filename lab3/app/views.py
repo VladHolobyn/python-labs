@@ -140,7 +140,6 @@ def todos():
     todo_list = db.session.query(Todo).all()
     return render_template("todo.html", todo_list=todo_list, form=TodoForm())
  
- 
 @app.route("/todos/add", methods=["POST"])
 def add_todo():
     form=TodoForm()
@@ -156,9 +155,9 @@ def update_todo(id):
     db.session.commit()
     return redirect(url_for("todos"))
  
-# @app.route("/todos/delete/<int:id>")
-# def delete_todo(id):
-#     todo = db.session.query(Todo).filter(Todo.id == id).first()
-#     db.session.delete(todo)
-#     db.session.commit()
-#     return redirect(url_for("todos"))
+@app.route("/todos/delete/<int:id>")
+def delete_todo(id):
+    todo = db.get_or_404(Todo, id)
+    db.session.delete(todo)
+    db.session.commit()
+    return redirect(url_for("todos"))

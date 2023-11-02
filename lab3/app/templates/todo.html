@@ -45,7 +45,7 @@
                       </td>
                       <td>
                         <a class="btn btn-success" href="{{url_for('update_todo', id=todo.id)}}">Update</a>
-                        <a class="btn btn-danger ms-1" href="/delete/{{ todo.id }}">Delete</a>
+                        <a class="btn btn-danger ms-1" href="{{url_for('delete_todo', id=todo.id)}}">Delete</a>
                       </td>
                     </tr>
                     {% endfor %}
