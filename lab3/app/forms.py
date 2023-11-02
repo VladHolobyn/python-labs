@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, DateField, EmailField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, DateField, EmailField, TextAreaField
 from wtforms.validators import DataRequired, Length
 
 
@@ -30,7 +30,7 @@ class TodoForm(FlaskForm):
     submit = SubmitField(label="Save")
 
 class FeedbackForm(FlaskForm):
-    text = StringField(label='Text', validators=[DataRequired("Text is required")])
+    text = TextAreaField(label='Text', validators=[DataRequired("Text is required")])
     email = EmailField(label='User email', validators=[DataRequired("Email is required")])
     submit = SubmitField(label="Save")
 
