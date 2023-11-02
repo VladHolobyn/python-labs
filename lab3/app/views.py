@@ -149,16 +149,16 @@ def add_todo():
     db.session.commit()
     return redirect(url_for("todos"))
  
-# @app.route("/update/<int:todo_id>")
-# def update(todo_id):
-#     todo = db.session.query(Todo).filter(Todo.id == todo_id).first()
-#     todo.complete = not todo.complete
-#     db.session.commit()
-#     return redirect(url_for("home"))
+@app.route("/todos/update/<int:id>")
+def update_todo(id):
+    todo = db.get_or_404(Todo, id)
+    todo.complete = not todo.complete   
+    db.session.commit()
+    return redirect(url_for("todos"))
  
-# @app.route("/delete/<int:todo_id>")
-# def delete(todo_id):
-#     todo = db.session.query(Todo).filter(Todo.id == todo_id).first()
+# @app.route("/todos/delete/<int:id>")
+# def delete_todo(id):
+#     todo = db.session.query(Todo).filter(Todo.id == id).first()
 #     db.session.delete(todo)
 #     db.session.commit()
-#     return redirect(url_for("home"))
+#     return redirect(url_for("todos"))
