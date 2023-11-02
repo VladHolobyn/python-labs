@@ -143,7 +143,7 @@ def todos():
 @app.route("/todos/add", methods=["POST"])
 def add_todo():
     form=TodoForm()
-    new_todo = Todo(title=form.title.data, complete=False)
+    new_todo = Todo(title=form.title.data, due_date=form.due_date.data, complete=False)
     db.session.add(new_todo)
     db.session.commit()
     return redirect(url_for("todos"))

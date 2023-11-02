@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, DateField
 from wtforms.validators import DataRequired, Length
 
 
@@ -26,4 +26,5 @@ class ChangePasswordForm(FlaskForm):
 
 class TodoForm(FlaskForm):
     title = StringField(label='Title', validators=[DataRequired("Title is required")])
+    due_date = DateField(label='Due date')
     submit = SubmitField(label="Save")

@@ -16,8 +16,12 @@
                         {{ render_field(form.title, class="form-control") }}
                     </div>
                 </div>
-    
-                <div class="col-6">
+                <div class="col-4">
+                    <div class="form-outline">
+                        {{ render_field(form.due_date, class="form-control") }}
+                    </div>
+                </div>
+                <div class="col-4">
                     {{ render_field(form.submit, class="btn btn-primary") }}
                 </div>
             </form>
@@ -27,6 +31,7 @@
                     <tr>
                       <th scope="col">No.</th>
                       <th scope="col">Todo item</th>
+                      <th scope="col">Due date</th>
                       <th scope="col">Status</th>
                       <th scope="col">Actions</th>
                     </tr>
@@ -36,6 +41,13 @@
                     <tr>
                       <th scope="row">{{todo.id }}</th>
                       <td>{{ todo.title }}</td>
+                      <td>
+                        {% if todo.due_date %}
+                            {{ todo.due_date }}
+                        {% else %}
+                            -
+                        {% endif %}
+                      </td>
                       <td>
                         {% if todo.complete == False %}
                         <div class="alert alert-secondary" role="alert">In progress</div>
