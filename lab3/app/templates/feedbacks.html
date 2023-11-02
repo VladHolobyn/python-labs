@@ -4,7 +4,7 @@
 {% block content %}
     <section class="top mt-5 ">
         <h1>Feedback form</h1>
-        <form class="" action="{{url_for('feedbacks')}}" method="post" style="max-width: 500px; width: 100%; margin:0 auto">
+        <form class="" action="{{url_for('feedbacks')}}" method="post" style="max-width: 800px; width: 100%" novalidate>
             {{ form.csrf_token }}
             <div class="form-group">
                 {{ render_field(form.email, class="form-control") }}
@@ -19,12 +19,12 @@
     </section>
     <section class="list mt-5">
         {% for feedback in feedbacks %}
-            <div class="card" style="width: 80%; margin:0 auto">
+            <div class="card mt-2" style="width: 80%; margin:0 auto">
                 <div class="card-body" >
                     <h4 class="card-title"></h4>
                     <h6 class="card-subtitle mb-2 text-muted">{{feedback.user_email}}</h6>
                     <p class="card-text">{{feedback.text}}</p>
-                    <p class="card-subtitle mb-2 text-muted">{{feedback.date}}</p>
+                    <p class="card-subtitle mb-2 text-muted">{{feedback.date.strftime('%Y-%m-%d %H:%M:%S')}}</p>
                 </div>
             </div>
         {% endfor %}

@@ -163,29 +163,16 @@ def delete_todo(id):
     return redirect(url_for("todos"))
 
 
-@app.route('/feedbacks')
+@app.route('/feedbacks', methods=["GET", "POST"])
 def feedbacks():
+    form=FeedbackForm()
+
+    if form.validate_on_submit():
+        new_feedback = Feedback(user_email=form.email.data, text=form.text.data, date=datetime.now())
+        db.session.add(new_feedback)
+        db.session.commit()
+        return redirect(url_for("feedbacks"))
+
     feedbacks = Feedback.query.all()
     return render_template("feedbacks.html", feedbacks=feedbacks, form=FeedbackForm())
  
-# @app.route("/todos/add", methods=["POST"])
-# def add_feedback():
-#     form=TodoForm()
-#     new_todo = Todo(title=form.title.data, due_date=form.due_date.data, complete=False)
-#     db.session.add(new_todo)
-#     db.session.commit()
-#     return redirect(url_for("todos"))
- 
-# @app.route("/todos/update/<int:id>")
-# def update_feedback(id):
-#     todo = Todo.query.get_or_404(id)
-#     todo.complete = not todo.complete   
-#     db.session.commit()
-#     return redirect(url_for("todos"))
- 
-# @app.route("/todos/delete/<int:id>")
-# def delete_feedback(id):
-#     todo = Todo.query.get_or_404(id)
-#     db.session.delete(todo)
-#     db.session.commit()
-#     return redirect(url_for("todos"))
