@@ -23,3 +23,7 @@ class ChangePasswordForm(FlaskForm):
             Length(min=4, max=10, message="Min length - 4, max - 10 symbols")
         ])
     submit = SubmitField(label="Save changes")
+
+class TodoForm(FlaskForm):
+    title = StringField(label='Title', validators=[DataRequired("Title is required")])
+    submit = SubmitField(label="Save")

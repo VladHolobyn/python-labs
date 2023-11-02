@@ -2,7 +2,7 @@ from flask import render_template, request, redirect, url_for, make_response, se
 from datetime import datetime
 import os
 from app import app
-from app.forms import LoginForm, ChangePasswordForm
+from app.forms import LoginForm, ChangePasswordForm, TodoForm
 import json
 from app import db
 from app import Todo
@@ -138,16 +138,16 @@ def change_password():
 @app.route('/todos')
 def todos():
     todo_list = db.session.query(Todo).all()
-    return render_template("todo.html", todo_list=todo_list)
+    return render_template("todo.html", todo_list=todo_list, form=TodoForm())
  
  
-# @app.route("/add", methods=["POST"])
-# def add():
-#     title = request.form.get("title")
-#     new_todo = Todo(title=title, complete=False)
-#     db.session.add(new_todo)
-#     db.session.commit()
-#     return redirect(url_for("home"))
+@app.route("/todos/add", methods=["POST"])
+def add_todo():
+    form=TodoForm()
+    new_todo = Todo(title=form.title.data, complete=False)
+    db.session.add(new_todo)
+    db.session.commit()
+    return redirect(url_for("todos"))
  
 # @app.route("/update/<int:todo_id>")
 # def update(todo_id):
