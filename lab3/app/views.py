@@ -2,10 +2,10 @@ from flask import render_template, request, redirect, url_for, make_response, se
 from datetime import datetime
 import os
 from app import app
-from app.forms import LoginForm, ChangePasswordForm, TodoForm
+from app.forms import LoginForm, ChangePasswordForm, TodoForm, FeedbackForm
 import json
 from app import db
-from app import Todo
+from app.models import Todo, Feedback
 
 JSON_FILE = os.path.join(app.static_folder, 'data/login.json')
 
@@ -161,3 +161,41 @@ def delete_todo(id):
     db.session.delete(todo)
     db.session.commit()
     return redirect(url_for("todos"))
+
+
+@app.route('/feedbacks', methods=["GET", "POST"])
+def feedbacks():
+    form=FeedbackForm()
+
+    if form.validate_on_submit():
+        new_feedback = Feedback(
+            topic= form.topic.data,
+            text=form.text.data,
+            mark=form.mark.data,
+            user_email=form.email.data,  
+            date=datetime.now())
+        
+        try:
+            db.session.add(new_feedback)
+            db.session.commit()
+            flash("Feedback added!", category="success")
+        except:
+            db.session.rollback()
+            flash("Something went wrong!", category="danger")
+        return redirect(url_for("feedbacks"))
+
+    feedbacks = Feedback.query.all()
+    return render_template("feedbacks.html", feedbacks=feedbacks, form=form)
+ 
+@app.route("/feedbacks/delete/<int:id>")
+def delete_feedback(id):
+    feedback = Feedback.query.get_or_404(id)
+    try:
+        db.session.delete(feedback)
+        db.session.commit()
+        flash("Feedback deleted!", category="success")
+    except:
+        db.session.rollback()
+        flash("Something went wrong!", category="danger")
+    
+    return redirect(url_for("feedbacks"))

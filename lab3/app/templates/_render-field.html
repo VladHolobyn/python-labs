@@ -1,6 +1,6 @@
 {% macro render_field(field) %}
   
-  {% if field.type in ["StringField", "PasswordField", "DateField"] %}
+  {% if field.type in ["StringField", "PasswordField", "DateField", "EmailField", "TextAreaField"] %}
       {{ field.label(class="form-label") }}
   {% elif field.type == "BooleanField" %}
       {{ field.label(class="form-check-label") }}
