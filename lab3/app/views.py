@@ -137,7 +137,7 @@ def change_password():
 
 @app.route('/todos')
 def todos():
-    todo_list = db.session.query(Todo).all()
+    todo_list = Todo.query.all()
     return render_template("todo.html", todo_list=todo_list, form=TodoForm())
  
 @app.route("/todos/add", methods=["POST"])
@@ -150,14 +150,14 @@ def add_todo():
  
 @app.route("/todos/update/<int:id>")
 def update_todo(id):
-    todo = db.get_or_404(Todo, id)
+    todo = Todo.query.get_or_404(id)
     todo.complete = not todo.complete   
     db.session.commit()
     return redirect(url_for("todos"))
  
 @app.route("/todos/delete/<int:id>")
 def delete_todo(id):
-    todo = db.get_or_404(Todo, id)
+    todo = Todo.query.get_or_404(id)
     db.session.delete(todo)
     db.session.commit()
     return redirect(url_for("todos"))
