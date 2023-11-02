@@ -173,10 +173,15 @@ def feedbacks():
             text=form.text.data,
             mark=form.mark.data,
             user_email=form.email.data,  
-            date=datetime.now()
-        )
-        db.session.add(new_feedback)
-        db.session.commit()
+            date=datetime.now())
+        
+        try:
+            db.session.add(new_feedback)
+            db.session.commit()
+            flash("Feedback added!", category="success")
+        except:
+            db.session.rollback()
+            flash("Something went wrong!", category="danger")
         return redirect(url_for("feedbacks"))
 
     feedbacks = Feedback.query.all()
@@ -185,6 +190,12 @@ def feedbacks():
 @app.route("/feedbacks/delete/<int:id>")
 def delete_feedback(id):
     feedback = Feedback.query.get_or_404(id)
-    db.session.delete(feedback)
-    db.session.commit()
+    try:
+        db.session.delete(feedback)
+        db.session.commit()
+        flash("Feedback deleted!", category="success")
+    except:
+        db.session.rollback()
+        flash("Something went wrong!", category="danger")
+    
     return redirect(url_for("feedbacks"))
