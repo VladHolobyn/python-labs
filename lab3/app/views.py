@@ -74,6 +74,10 @@ def logout():
     flash("Logged out successfully!!", category="success")
     return redirect(url_for("login"))
 
+@app.route('/users')
+def users():
+    return render_template('users.html', users=User.query.all())
+
 @app.route('/info')
 def info_page():
     form = ChangePasswordForm()
