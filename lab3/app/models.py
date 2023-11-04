@@ -16,3 +16,13 @@ class Feedback(db.Model):
     text: Mapped[str] = mapped_column(String)
     mark: Mapped[int] = mapped_column(Integer)
     date: Mapped[datetime] = mapped_column(DateTime) 
+
+class User(db.Model):
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    username: Mapped[str] = mapped_column(String(20), unique=True, nullable=False)
+    email: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
+    image_file: Mapped[str] = mapped_column(String(20), nullable=False, default='default.jpg')
+    password: Mapped[str] = mapped_column(String(60), nullable=False)
+    
+    def __repr__(self) -> str:
+        return f"User({self.username}, {self.email})"
