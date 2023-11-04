@@ -1,13 +1,10 @@
 from flask import render_template, request, redirect, url_for, make_response, session, flash
 from datetime import datetime
 import os
-from app import app
+from app import app, db
 from app.forms import LoginForm, ChangePasswordForm, TodoForm, FeedbackForm,RegistrationForm
-import json
-from app import db
-from app.models import Todo, Feedback
+from app.models import Todo, Feedback, User
 
-JSON_FILE = os.path.join(app.static_folder, 'data/login.json')
 
 skills = ["java", "postgres", "spring", "hibernate", "junit", "docker"]
 
@@ -32,37 +29,42 @@ def contacts_page():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegistrationForm()
+    
     if form.validate_on_submit():
-        flash(f"Account created for {form.username.data}!", "success")
+        new_user = User(username= form.username.data, email=form.email.data, password=form.password.data)
+        try:
+            db.session.add(new_user)
+            db.session.commit()
+            flash(f"Account created for {form.username.data}!", "success")
+        except:
+            db.session.rollback()
+            flash("Something went wrong!", category="danger")
         return redirect(url_for("login"))
+    
     return render_template('register.html', form=form)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
 
-    if"username" in session:
+    if"email" in session:
         return redirect(url_for("info_page"))   
     
     form = LoginForm()
 
-    if  form.validate_on_submit(): 
-        email = form.email.data
-        password = form.password.data
-        remember = form.remember.data
-
-        with open(JSON_FILE) as f:
-            users = json.load(f).get("users")
-            if any(user.get("name") == email and user.get("password") == password for user in users): 
-                if remember:
-                    session["username"] = email
-                    flash("Logged in successfully!!", category="success")
-                    return redirect(url_for("info_page"))
+    if form.validate_on_submit(): 
+        user = User.query.filter_by(email=form.email.data).first()
+        
+        if user and user.password == form.password.data: 
+            if form.remember.data:
+                session["email"] = form.email.data
+                flash("Logged in successfully!!", category="success")
+                return redirect(url_for("info_page"))
                 
-                flash("Logged in successfully to about!!", category="success")
-                return redirect(url_for("about_page"))
+            flash("Logged in successfully to about!!", category="success")
+            return redirect(url_for("about_page"))
 
-            flash("Wrong data! Try again!", category="danger")
-            return redirect(url_for("login"))
+        flash("Wrong data! Try again!", category="danger")
+        return redirect(url_for("login"))
     
     return render_template('login.html', form=form)
 
@@ -76,11 +78,11 @@ def logout():
 def info_page():
     form = ChangePasswordForm()
 
-    if "username" not in session:
+    if "email" not in session:
         flash("You need to login first!", category="danger")
         return redirect(url_for("login"))
 
-    return render_template('info.html', username=session.get("username"), cookies=request.cookies, form=form)
+    return render_template('info.html', username=session.get("email"), cookies=request.cookies, form=form)
 
 
 @app.route('/cookies', methods=["POST"])
@@ -117,25 +119,18 @@ def change_password():
     form = ChangePasswordForm()
 
     if form.validate_on_submit():
-        old = form.old_password.data
-        new = form.new_password.data
-        username = session.get("username")
+        user = User.query.filter_by(email=session.get("email")).first()
 
-        file =  open(JSON_FILE, "r")
-        data = json.load(file)
-        file.close()    
-        users = data.get("users")
-
-        index = next((i for i, user in enumerate(users) if user.get("name") == username), -1)
-
-        if index >= 0 and users[index].get("password") == old:
-            users[index]["password"] = new
-            file = open(JSON_FILE, "w+")
-            file.write(json.dumps(data))
-            file.close() 
-            flash("Password changed!", category="success")
+        if user and user.password == form.old_password.data:
+            try:
+                user.password = form.new_password.data
+                db.session.commit()
+                flash("Password changed!", category="success")
+            except:
+                db.session.rollback()
+                flash("Failed!", category="danger")
         else:
-            flash("Failed!", category="danger")
+            flash("Wrong data! Try again!", category="danger")
     else:
         flash("Validation error!", category="danger")
     
