@@ -1,17 +1,26 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, DateField, EmailField, TextAreaField, RadioField
-from wtforms.validators import DataRequired, Length
+from wtforms.validators import DataRequired, Length, Email
 
 
 class LoginForm(FlaskForm):
-    name = StringField(label='User name', validators=[DataRequired("User name is required")])
-    password = PasswordField(label='Password', validators=[
-            DataRequired("Password is required"), 
-            Length(min=4, max=10, message="Min length - 4, max - 10 symbols")
-        ])
+    email = StringField(label='Email', validators=[DataRequired("Email is required"), Email()])
+    password = PasswordField(label='Password', validators=[DataRequired("Password is required")])
     remember = BooleanField(label="Remember me")
     submit = SubmitField(label="Sign in")
 
+class RegistrationForm(FlaskForm):
+    username = StringField(label='User name', validators=[
+            DataRequired("Name is required"),
+            Length(min=4, max=14, message="Min length - 4, max - 14 symbols")
+        ])
+    email = StringField(label='Email', validators=[DataRequired("Email is required"), Email()])
+    password = PasswordField(label='Password', validators=[
+            DataRequired("Password is required"), 
+            Length(min=7, message="Min length - 7 symbols")
+        ])
+    confirm_password = PasswordField(label='Password', validators=[DataRequired("Confirm password is required")])
+    submit = SubmitField(label="Sign up")
 
 class ChangePasswordForm(FlaskForm):
     old_password = PasswordField(label='Old password', validators=[
