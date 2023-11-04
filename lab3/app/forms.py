@@ -19,7 +19,7 @@ class RegistrationForm(FlaskForm):
             DataRequired("Password is required"), 
             Length(min=7, message="Min length - 7 symbols")
         ])
-    confirm_password = PasswordField(label='Password', validators=[DataRequired("Confirm password is required")])
+    confirm_password = PasswordField(label='Confirm password', validators=[DataRequired("Confirm password is required")])
     submit = SubmitField(label="Sign up")
 
 class ChangePasswordForm(FlaskForm):
