@@ -2,7 +2,7 @@ from flask import render_template, request, redirect, url_for, make_response, se
 from datetime import datetime
 import os
 from app import app
-from app.forms import LoginForm, ChangePasswordForm, TodoForm, FeedbackForm
+from app.forms import LoginForm, ChangePasswordForm, TodoForm, FeedbackForm,RegistrationForm
 import json
 from app import db
 from app.models import Todo, Feedback
@@ -29,6 +29,13 @@ def contacts_page():
     return render_template('contacts.html')
 
 
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    form = RegistrationForm()
+    if form.validate_on_submit:
+        flash(f"Account created for {form.username.data}!", "success")
+        return redirect(url_for("login"))
+    return render_template('login.html', form=form)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -39,15 +46,15 @@ def login():
     form = LoginForm()
 
     if  form.validate_on_submit(): 
-        username = form.name.data
+        email = form.email.data
         password = form.password.data
         remember = form.remember.data
 
         with open(JSON_FILE) as f:
             users = json.load(f).get("users")
-            if any(user.get("name") == username and user.get("password") == password for user in users): 
+            if any(user.get("name") == email and user.get("password") == password for user in users): 
                 if remember:
-                    session["username"] = username
+                    session["username"] = email
                     flash("Logged in successfully!!", category="success")
                     return redirect(url_for("info_page"))
                 
