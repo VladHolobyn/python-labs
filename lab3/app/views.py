@@ -28,6 +28,7 @@ def contacts_page():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+    session.pop('email', None)
     form = RegistrationForm()
     
     if form.validate_on_submit():
