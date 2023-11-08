@@ -72,19 +72,23 @@ def logout():
     flash("Logged out successfully!!", category="success")
     return redirect(url_for("login"))
 
+@app.route('/account')
+def account():
+    form = ChangePasswordForm()
+    return render_template('account.html',form=form, user=current_user, is_authenticated=True)
+
 @app.route('/users')
 def users():
     return render_template('users.html', users=User.query.all(), is_authenticated=current_user.is_authenticated)
 
 @app.route('/info')
 def info_page():
-    form = ChangePasswordForm()
 
     if not current_user.is_authenticated:
         flash("You need to login first!", category="danger")
         return redirect(url_for("login"))
 
-    return render_template('info.html', username=current_user.username, cookies=request.cookies, form=form, is_authenticated=True)
+    return render_template('info.html', username=current_user.username, cookies=request.cookies, is_authenticated=True)
 
 
 @app.route('/cookies', methods=["POST"])

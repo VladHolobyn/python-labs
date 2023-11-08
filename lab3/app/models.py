@@ -26,7 +26,7 @@ class User(db.Model, UserMixin):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     username: Mapped[str] = mapped_column(String(20), unique=True, nullable=False)
     email: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
-    image_file: Mapped[str] = mapped_column(String(20), nullable=False, default='default.jpg')
+    image_file: Mapped[str] = mapped_column(String(20), nullable=False, default='default.png')
     password_hash: Mapped[str] = mapped_column(String(60), nullable=False)
     
     def __init__(self, name, email, password):
