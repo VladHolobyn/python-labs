@@ -11,19 +11,19 @@ skills = ["java", "postgres", "spring", "hibernate", "junit", "docker"]
 @app.route('/')
 @app.route('/about')
 def about_page():
-    return render_template('about.html', os=os.name, user_agent=request.headers.get('User-Agent'), time=datetime.now())
+    return render_template('about.html', os=os.name, user_agent=request.headers.get('User-Agent'), time=datetime.now(), is_authenticated=current_user.is_authenticated)
 
 @app.route('/skills')
 @app.route('/skills/<int:id>')
 def skills_page(id=None):
     if id is not None and id < len(skills):
-        return render_template('skill.html', skill=skills[id])
+        return render_template('skill.html', skill=skills[id], is_authenticated=current_user.is_authenticated)
     else:
-        return render_template('skills.html', skills=skills)
+        return render_template('skills.html', skills=skills, is_authenticated=current_user.is_authenticated)
 
 @app.route('/contacts')
 def contacts_page():
-    return render_template('contacts.html')
+    return render_template('contacts.html', is_authenticated=current_user.is_authenticated)
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -74,7 +74,7 @@ def logout():
 
 @app.route('/users')
 def users():
-    return render_template('users.html', users=User.query.all())
+    return render_template('users.html', users=User.query.all(), is_authenticated=current_user.is_authenticated)
 
 @app.route('/info')
 def info_page():
@@ -84,7 +84,7 @@ def info_page():
         flash("You need to login first!", category="danger")
         return redirect(url_for("login"))
 
-    return render_template('info.html', username=current_user.username, cookies=request.cookies, form=form)
+    return render_template('info.html', username=current_user.username, cookies=request.cookies, form=form, is_authenticated=True)
 
 
 @app.route('/cookies', methods=["POST"])
@@ -144,7 +144,7 @@ def change_password():
 @app.route('/todos')
 def todos():
     todo_list = Todo.query.all()
-    return render_template("todo.html", todo_list=todo_list, form=TodoForm())
+    return render_template("todo.html", todo_list=todo_list, form=TodoForm(), is_authenticated=current_user.is_authenticated)
  
 @app.route("/todos/add", methods=["POST"])
 def add_todo():
@@ -191,7 +191,7 @@ def feedbacks():
         return redirect(url_for("feedbacks"))
 
     feedbacks = Feedback.query.all()
-    return render_template("feedbacks.html", feedbacks=feedbacks, form=form)
+    return render_template("feedbacks.html", feedbacks=feedbacks, form=form, is_authenticated=current_user.is_authenticated)
  
 @app.route("/feedbacks/delete/<int:id>")
 def delete_feedback(id):
