@@ -4,7 +4,7 @@ import os
 from app import app, db
 from app.forms import LoginForm, ChangePasswordForm, TodoForm, FeedbackForm,RegistrationForm
 from app.models import Todo, Feedback, User
-from flask_login import login_user, current_user, logout_user
+from flask_login import login_user, current_user, logout_user, login_required
 
 skills = ["java", "postgres", "spring", "hibernate", "junit", "docker"]
 
@@ -67,31 +67,31 @@ def login():
     return render_template('login.html', form=form)
 
 @app.route('/logout', methods=["POST"])
+@login_required
 def logout():
     logout_user()
     flash("Logged out successfully!!", category="success")
     return redirect(url_for("login"))
 
 @app.route('/account')
+@login_required
 def account():
     form = ChangePasswordForm()
     return render_template('account.html',form=form, user=current_user, is_authenticated=True)
 
 @app.route('/users')
+@login_required
 def users():
-    return render_template('users.html', users=User.query.all(), is_authenticated=current_user.is_authenticated)
+    return render_template('users.html', users=User.query.all(), is_authenticated=True)
 
 @app.route('/info')
+@login_required
 def info_page():
-
-    if not current_user.is_authenticated:
-        flash("You need to login first!", category="danger")
-        return redirect(url_for("login"))
-
     return render_template('info.html', username=current_user.username, cookies=request.cookies, is_authenticated=True)
 
 
 @app.route('/cookies', methods=["POST"])
+@login_required
 def add_cookie():
     key = request.form.get("key")
     value = request.form.get("value")
@@ -108,6 +108,7 @@ def add_cookie():
 
 @app.route('/cookies/delete', methods=["POST"])
 @app.route('/cookies/delete/<key>', methods=["POST"])
+@login_required
 def delete_cookie(key = None):
     response = make_response(redirect(url_for("info_page")))
 
@@ -121,6 +122,7 @@ def delete_cookie(key = None):
     return response
 
 @app.route('/change-password', methods=["POST"])
+@login_required
 def change_password():
     form = ChangePasswordForm()
 
