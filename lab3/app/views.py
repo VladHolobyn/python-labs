@@ -4,7 +4,7 @@ import os
 from app import app, db
 from app.forms import LoginForm, ChangePasswordForm, TodoForm, FeedbackForm,RegistrationForm
 from app.models import Todo, Feedback, User
-
+from flask_login import login_user, current_user, logout_user, login_required
 
 skills = ["java", "postgres", "spring", "hibernate", "junit", "docker"]
 
@@ -28,7 +28,9 @@ def contacts_page():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    session.pop('email', None)
+    if current_user.is_authenticated:
+        return redirect(url_for('info_page'))
+    
     form = RegistrationForm()
     
     if form.validate_on_submit():
@@ -36,19 +38,18 @@ def register():
         try:
             db.session.add(new_user)
             db.session.commit()
-            flash(f"Account created for {form.username.data}!", "success")
+            flash(f"Account created for {new_user.username}!", "success")
+            return redirect(url_for("login"))
         except:
             db.session.rollback()
             flash("Something went wrong!", category="danger")
-        return redirect(url_for("login"))
     
     return render_template('register.html', form=form)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-
-    if"email" in session:
-        return redirect(url_for("info_page"))   
+    if current_user.is_authenticated:
+        return redirect(url_for('info_page'))
     
     form = LoginForm()
 
@@ -56,13 +57,9 @@ def login():
         user = User.query.filter_by(email=form.email.data).first()
         
         if user and user.verify_password(form.password.data): 
-            if form.remember.data:
-                session["email"] = form.email.data
-                flash("Logged in successfully!!", category="success")
-                return redirect(url_for("info_page"))
-                
-            flash("Logged in successfully to about!!", category="success")
-            return redirect(url_for("about_page"))
+            login_user(user, remember=form.remember.data)
+            flash("Logged in successfully!!", category="success")    
+            return redirect(url_for("info_page"))
 
         flash("Wrong data! Try again!", category="danger")
         return redirect(url_for("login"))
@@ -70,27 +67,31 @@ def login():
     return render_template('login.html', form=form)
 
 @app.route('/logout', methods=["POST"])
+@login_required
 def logout():
-    session.clear()
+    logout_user()
     flash("Logged out successfully!!", category="success")
     return redirect(url_for("login"))
 
+@app.route('/account')
+@login_required
+def account():
+    form = ChangePasswordForm()
+    return render_template('account.html', form=form)
+
 @app.route('/users')
+@login_required
 def users():
     return render_template('users.html', users=User.query.all())
 
 @app.route('/info')
+@login_required
 def info_page():
-    form = ChangePasswordForm()
-
-    if "email" not in session:
-        flash("You need to login first!", category="danger")
-        return redirect(url_for("login"))
-
-    return render_template('info.html', username=session.get("email"), cookies=request.cookies, form=form)
+    return render_template('info.html', cookies=request.cookies)
 
 
 @app.route('/cookies', methods=["POST"])
+@login_required
 def add_cookie():
     key = request.form.get("key")
     value = request.form.get("value")
@@ -107,6 +108,7 @@ def add_cookie():
 
 @app.route('/cookies/delete', methods=["POST"])
 @app.route('/cookies/delete/<key>', methods=["POST"])
+@login_required
 def delete_cookie(key = None):
     response = make_response(redirect(url_for("info_page")))
 
@@ -120,17 +122,20 @@ def delete_cookie(key = None):
     return response
 
 @app.route('/change-password', methods=["POST"])
+@login_required
 def change_password():
     form = ChangePasswordForm()
 
     if form.validate_on_submit():
-        user = User.query.filter_by(email=session.get("email")).first()
+        user = current_user
 
         if user and user.verify_password(form.old_password.data):
             try:
                 user.password = form.new_password.data
                 db.session.commit()
+                logout_user()
                 flash("Password changed!", category="success")
+                return redirect(url_for("login"))
             except:
                 db.session.rollback()
                 flash("Failed!", category="danger")
