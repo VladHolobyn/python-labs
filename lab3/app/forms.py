@@ -63,6 +63,7 @@ class ChangePasswordForm(FlaskForm):
             DataRequired("New password is required"), 
             Length(min=4, max=10, message="Min length - 4, max - 10 symbols")
         ])
+    confirm_password = PasswordField(label='Confirm password', validators=[DataRequired("Confirm password is required"),EqualTo('new_password')])
     submit = SubmitField(label="Save changes")
 
 class TodoForm(FlaskForm):

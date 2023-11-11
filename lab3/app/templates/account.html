@@ -32,15 +32,17 @@
               <div class="p-3 py-5">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                   <h4 class="text-right">Change password</h4>
-                  <!-- <span class="badge rounded-pill bg-danger">Danger</span> -->
                 </div>
-                <form action="{{url_for('change_password')}}" method="POST">
+                <form action="{{url_for('change_password')}}" method="POST" novalidate>
                   {{ password_form.csrf_token }}
                   <div class="form-group">
                     {{ render_field(password_form.old_password, class="form-control") }}
                   </div>
                   <div class="form-group">
                     {{ render_field(password_form.new_password, class="form-control") }}
+                  </div>
+                  <div class="form-group">
+                    {{ render_field(password_form.confirm_password, class="form-control") }}
                   </div>
                   {{ render_field(password_form.submit, class="btn btn-outline-primary", style="margin-top: 25px") }}
                 </form>

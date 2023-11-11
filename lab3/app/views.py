@@ -128,11 +128,9 @@ def change_password():
     form = ChangePasswordForm()
 
     if form.validate_on_submit():
-        user = current_user
-
-        if user and user.verify_password(form.old_password.data):
+        if current_user.verify_password(form.old_password.data):
             try:
-                user.password = form.new_password.data
+                current_user.password = form.new_password.data
                 db.session.commit()
                 logout_user()
                 flash("Password changed!", category="success")
@@ -142,10 +140,10 @@ def change_password():
                 flash("Failed!", category="danger")
         else:
             flash("Wrong data! Try again!", category="danger")
-    else:
-        flash("Validation error!", category="danger")
+        return redirect(url_for("account"))
     
-    return redirect(url_for("info_page"))
+    flash("Validation error!", category="danger")
+    return render_template('account.html', password_form=form, info_form=UpdateAccountForm())
 
 @app.route('/update-user', methods=["POST"])
 @login_required
@@ -161,10 +159,10 @@ def update_user():
         except:
             db.session.rollback()
             flash("Failed!", category="danger")
-    else:
-        flash("Validation error!", category="danger")
-    
-    return redirect(url_for("account"))
+        return redirect(url_for("account"))
+
+    flash("Validation error!", category="danger")
+    return render_template('account.html', password_form=ChangePasswordForm(), info_form=form)
 
 
 @app.route('/todos')
