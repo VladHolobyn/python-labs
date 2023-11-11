@@ -28,7 +28,9 @@ class User(db.Model, UserMixin):
     email: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
     image_file: Mapped[str] = mapped_column(String(20), nullable=False, default='default.png')
     password_hash: Mapped[str] = mapped_column(String(60), nullable=False)
-    
+    last_seen: Mapped[datetime] = mapped_column(DateTime, nullable=True, default=datetime.now())
+    about_me: Mapped[str] = mapped_column(String, nullable=True)
+
     def __init__(self, name, email, password):
         self.username = name
         self.email = email

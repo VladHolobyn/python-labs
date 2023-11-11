@@ -9,6 +9,16 @@ import os
 
 skills = ["java", "postgres", "spring", "hibernate", "junit", "docker"]
 
+@app.after_request
+def after_request(response):
+    if current_user:
+        current_user.last_seen = datetime.now()
+        try:
+            db.session.commit()
+        except:
+            flash('Error while update user last seen!', 'danger')
+    return response
+
 @app.route('/')
 @app.route('/about')
 def about_page():
@@ -150,12 +160,14 @@ def change_password():
 @login_required
 def update_user():
     form = UpdateAccountForm(current_user=current_user)
+
     if form.validate_on_submit():
         if form.picture.data:
             current_user.image_file = save_picture(form.picture.data)
         try:
             current_user.username = form.username.data
             current_user.email = form.email.data
+            current_user.about_me = form.about_me.data
             db.session.commit()
             flash("Info updated!", category="success")
         except:
