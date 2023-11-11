@@ -1,10 +1,11 @@
 from flask import render_template, request, redirect, url_for, make_response, session, flash
-from datetime import datetime
-import os
 from app import app, db
 from app.forms import LoginForm, ChangePasswordForm, TodoForm, FeedbackForm,RegistrationForm, UpdateAccountForm
 from app.models import Todo, Feedback, User
+from app.util import save_picture
 from flask_login import login_user, current_user, logout_user, login_required
+from datetime import datetime
+import os
 
 skills = ["java", "postgres", "spring", "hibernate", "junit", "docker"]
 
@@ -149,8 +150,9 @@ def change_password():
 @login_required
 def update_user():
     form = UpdateAccountForm(current_user=current_user)
-
     if form.validate_on_submit():
+        if form.picture.data:
+            current_user.image_file = save_picture(form.picture.data)
         try:
             current_user.username = form.username.data
             current_user.email = form.email.data

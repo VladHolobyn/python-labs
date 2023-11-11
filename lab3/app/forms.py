@@ -1,4 +1,5 @@
 from flask_wtf import FlaskForm
+from flask_wtf.file import FileAllowed, FileField 
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, DateField, EmailField, TextAreaField, RadioField
 from wtforms.validators import DataRequired, Length, Email, ValidationError, EqualTo, Regexp
 from app.models import User
@@ -38,6 +39,7 @@ class UpdateAccountForm(FlaskForm):
             Regexp('^[A-Za-z][A-Za-z0-9_.]*$',0, 'Username must have only lettters, numbers, dots or underscores')
         ])
     email = StringField(label='Email', validators=[DataRequired("Email is required"), Email()])
+    picture = FileField('Update profile picture', validators=[FileAllowed(['jpg','png'])])
     submit = SubmitField(label="Update")
 
     def __init__(self, current_user = None):
