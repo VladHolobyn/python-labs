@@ -2,7 +2,7 @@ from flask import render_template, request, redirect, url_for, make_response, se
 from datetime import datetime
 import os
 from app import app, db
-from app.forms import LoginForm, ChangePasswordForm, TodoForm, FeedbackForm,RegistrationForm
+from app.forms import LoginForm, ChangePasswordForm, TodoForm, FeedbackForm,RegistrationForm, UpdateAccountForm
 from app.models import Todo, Feedback, User
 from flask_login import login_user, current_user, logout_user, login_required
 
@@ -76,8 +76,9 @@ def logout():
 @app.route('/account')
 @login_required
 def account():
-    form = ChangePasswordForm()
-    return render_template('account.html', form=form)
+    password_form = ChangePasswordForm()
+    info_form = UpdateAccountForm()
+    return render_template('account.html', password_form=password_form, info_form=info_form)
 
 @app.route('/users')
 @login_required
@@ -145,6 +146,25 @@ def change_password():
         flash("Validation error!", category="danger")
     
     return redirect(url_for("info_page"))
+
+@app.route('/update-user', methods=["POST"])
+@login_required
+def update_user():
+    form = UpdateAccountForm(current_user=current_user)
+
+    if form.validate_on_submit():
+        try:
+            current_user.username = form.username.data
+            current_user.email = form.email.data
+            db.session.commit()
+            flash("Info updated!", category="success")
+        except:
+            db.session.rollback()
+            flash("Failed!", category="danger")
+    else:
+        flash("Validation error!", category="danger")
+    
+    return redirect(url_for("account"))
 
 
 @app.route('/todos')

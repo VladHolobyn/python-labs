@@ -13,3 +13,6 @@
     max-width: 500px;
     width: 100%;
 }
+.border-right {
+    border-right: 1px solid #dee2e6;
+}
