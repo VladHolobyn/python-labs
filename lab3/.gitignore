@@ -1,3 +1,4 @@
 .holobyn_project
 __pycache__
 instance
+app/static/profile_pics

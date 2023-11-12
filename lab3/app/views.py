@@ -1,12 +1,23 @@
 from flask import render_template, request, redirect, url_for, make_response, session, flash
+from app import app, db
+from app.forms import LoginForm, ChangePasswordForm, TodoForm, FeedbackForm,RegistrationForm, UpdateAccountForm
+from app.models import Todo, Feedback, User
+from app.util import save_picture
+from flask_login import login_user, current_user, logout_user, login_required
 from datetime import datetime
 import os
-from app import app, db
-from app.forms import LoginForm, ChangePasswordForm, TodoForm, FeedbackForm,RegistrationForm
-from app.models import Todo, Feedback, User
-from flask_login import login_user, current_user, logout_user, login_required
 
 skills = ["java", "postgres", "spring", "hibernate", "junit", "docker"]
+
+@app.after_request
+def after_request(response):
+    if current_user:
+        current_user.last_seen = datetime.now()
+        try:
+            db.session.commit()
+        except:
+            flash('Error while update user last seen!', 'danger')
+    return response
 
 @app.route('/')
 @app.route('/about')
@@ -76,8 +87,9 @@ def logout():
 @app.route('/account')
 @login_required
 def account():
-    form = ChangePasswordForm()
-    return render_template('account.html', form=form)
+    password_form = ChangePasswordForm()
+    info_form = UpdateAccountForm()
+    return render_template('account.html', password_form=password_form, info_form=info_form)
 
 @app.route('/users')
 @login_required
@@ -127,11 +139,9 @@ def change_password():
     form = ChangePasswordForm()
 
     if form.validate_on_submit():
-        user = current_user
-
-        if user and user.verify_password(form.old_password.data):
+        if current_user.verify_password(form.old_password.data):
             try:
-                user.password = form.new_password.data
+                current_user.password = form.new_password.data
                 db.session.commit()
                 logout_user()
                 flash("Password changed!", category="success")
@@ -141,10 +151,32 @@ def change_password():
                 flash("Failed!", category="danger")
         else:
             flash("Wrong data! Try again!", category="danger")
-    else:
-        flash("Validation error!", category="danger")
+        return redirect(url_for("account"))
     
-    return redirect(url_for("info_page"))
+    flash("Validation error!", category="danger")
+    return render_template('account.html', password_form=form, info_form=UpdateAccountForm())
+
+@app.route('/update-user', methods=["POST"])
+@login_required
+def update_user():
+    form = UpdateAccountForm(current_user=current_user)
+
+    if form.validate_on_submit():
+        if form.picture.data:
+            current_user.image_file = save_picture(form.picture.data)
+        try:
+            current_user.username = form.username.data
+            current_user.email = form.email.data
+            current_user.about_me = form.about_me.data
+            db.session.commit()
+            flash("Info updated!", category="success")
+        except:
+            db.session.rollback()
+            flash("Failed!", category="danger")
+        return redirect(url_for("account"))
+
+    flash("Validation error!", category="danger")
+    return render_template('account.html', password_form=ChangePasswordForm(), info_form=form)
 
 
 @app.route('/todos')
