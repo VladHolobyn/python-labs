@@ -1,0 +1,111 @@
+from flask import Blueprint, render_template, redirect, url_for, flash
+from app.extensions import db
+from app.auth.forms import LoginForm, ChangePasswordForm, RegistrationForm, UpdateAccountForm
+from app.auth.models import User
+from app.auth.util import save_picture
+from flask_login import login_user, current_user, logout_user, login_required
+
+
+auth = Blueprint('auth', __name__, template_folder='template', static_folder='static', static_url_path='auth/static')
+
+@auth.route('/register', methods=['GET', 'POST'])
+def register():
+    if current_user.is_authenticated:
+        return redirect(url_for('info_page'))
+    
+    form = RegistrationForm()
+    
+    if form.validate_on_submit():
+        new_user = User(name=form.username.data, email=form.email.data, password=form.password.data)
+        try:
+            db.session.add(new_user)
+            db.session.commit()
+            flash(f"Account created for {new_user.username}!", "success")
+            return redirect(url_for("auth.login"))
+        except:
+            db.session.rollback()
+            flash("Something went wrong!", category="danger")
+    
+    return render_template('auth/register.html', form=form)
+
+@auth.route('/login', methods=['GET', 'POST'])
+def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('info_page'))
+    
+    form = LoginForm()
+
+    if form.validate_on_submit(): 
+        user = User.query.filter_by(email=form.email.data).first()
+        
+        if user and user.verify_password(form.password.data): 
+            login_user(user, remember=form.remember.data)
+            flash("Logged in successfully!!", category="success")    
+            return redirect(url_for("info_page"))
+
+        flash("Wrong data! Try again!", category="danger")
+        return redirect(url_for("auth.login"))
+    
+    return render_template('auth/login.html', form=form)
+
+@auth.route('/logout', methods=["POST"])
+@login_required
+def logout():
+    logout_user()
+    flash("Logged out successfully!!", category="success")
+    return redirect(url_for("auth.login"))
+
+@auth.route('/account', methods=['GET'])
+@login_required
+def account():
+    return render_template('auth/account.html', password_form=ChangePasswordForm(), info_form=UpdateAccountForm())
+
+@auth.route('/change-password', methods=["POST"])
+@login_required
+def change_password():
+    form = ChangePasswordForm()
+
+    if form.validate_on_submit():
+        if current_user.verify_password(form.old_password.data):
+            try:
+                current_user.password = form.new_password.data
+                db.session.commit()
+                logout_user()
+                flash("Password changed!", category="success")
+                return redirect(url_for("auth.login"))
+            except:
+                db.session.rollback()
+                flash("Failed!", category="danger")
+        else:
+            flash("Wrong data! Try again!", category="danger")
+        return redirect(url_for("auth.account"))
+    
+    flash("Validation error!", category="danger")
+    return render_template('auth/account.html', password_form=form, info_form=UpdateAccountForm())
+
+@auth.route('/update-user', methods=["POST"])
+@login_required
+def update_user():
+    form = UpdateAccountForm(current_user=current_user)
+
+    if form.validate_on_submit():
+        if form.picture.data:
+            current_user.image_file = save_picture(form.picture.data)
+        try:
+            current_user.username = form.username.data
+            current_user.email = form.email.data
+            current_user.about_me = form.about_me.data
+            db.session.commit()
+            flash("Info updated!", category="success")
+        except:
+            db.session.rollback()
+            flash("Failed!", category="danger")
+        return redirect(url_for("auth.account"))
+
+    flash("Validation error!", category="danger")
+    return render_template('auth/account.html', password_form=ChangePasswordForm(), info_form=form)
+
+@auth.route('/users')
+@login_required
+def users():
+    return render_template('auth/users.html', users=User.query.all())
