@@ -2,6 +2,7 @@ from flask import Flask
 from .extensions import db, migrate, bcrypt, login_manager
 from config import config
 from app.auth.views import auth
+from app.resume.views import resume
 
 
 def create_app(config_name = 'default'):
@@ -15,6 +16,7 @@ def create_app(config_name = 'default'):
 
     with app.app_context():
         app.register_blueprint(auth, url_prefix='/')
+        app.register_blueprint(resume, url_prefix='/resume')
         from app import views
         return app
     

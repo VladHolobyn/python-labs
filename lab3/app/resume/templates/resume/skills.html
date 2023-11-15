@@ -7,10 +7,10 @@
         {% for skill in skills %}
             <div class="card mb-3 text-center" >
                 <h3 class="card-header">
-                    <a href="{{url_for('skills_page', id=loop.index-1)}}">{{ skill.capitalize() }}</a>
+                    <a href="{{url_for('resume.skills_page', id=loop.index-1)}}">{{ skill.capitalize() }}</a>
                 </h3>
                 <img class="card-img-top " 
-                     src="{{url_for('static', filename='images/{}.svg'.format(skill))}}" 
+                     src="{{url_for('resume.static', filename='images/{}.svg'.format(skill))}}" 
                      style="width: 5rem; align-self: center;" 
                      alt="{{ skill.capitalize() }}"
                 >

@@ -2,38 +2,9 @@ from flask import render_template, request, redirect, url_for, make_response, fl
 from .extensions  import db
 from app.forms import TodoForm, FeedbackForm
 from app.models import Todo, Feedback
-from flask_login import current_user, login_required
+from flask_login import login_required
 from datetime import datetime
-import os
 
-skills = ["java", "postgres", "spring", "hibernate", "junit", "docker"]
-
-@current_app.after_request
-def after_request(response):
-    if current_user:
-        current_user.last_seen = datetime.now()
-        try:
-            db.session.commit()
-        except:
-            flash('Error while update user last seen!', 'danger')
-    return response
-
-@current_app.route('/')
-@current_app.route('/about')
-def about_page():
-    return render_template('about.html', os=os.name, user_agent=request.headers.get('User-Agent'), time=datetime.now())
-
-@current_app.route('/skills')
-@current_app.route('/skills/<int:id>')
-def skills_page(id=None):
-    if id is not None and id < len(skills):
-        return render_template('skill.html', skill=skills[id])
-    else:
-        return render_template('skills.html', skills=skills)
-
-@current_app.route('/contacts')
-def contacts_page():
-    return render_template('contacts.html')
 
 @current_app.route('/info')
 @login_required
