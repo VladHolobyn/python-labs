@@ -4,9 +4,19 @@ from app.auth.forms import LoginForm, ChangePasswordForm, RegistrationForm, Upda
 from app.auth.models import User
 from app.auth.util import save_picture
 from flask_login import login_user, current_user, logout_user, login_required
+from datetime import datetime
 
+auth = Blueprint('auth', __name__, template_folder='templates', static_folder='static', static_url_path='auth/static')
 
-auth = Blueprint('auth', __name__, template_folder='template', static_folder='static', static_url_path='auth/static')
+@auth.after_request
+def after_request(response):
+    if current_user:
+        current_user.last_seen = datetime.now()
+        try:
+            db.session.commit()
+        except:
+            flash('Error while update user last seen!', 'danger')
+    return response
 
 @auth.route('/register', methods=['GET', 'POST'])
 def register():
