@@ -1,10 +1,10 @@
 from flask import render_template, redirect, url_for, flash
-from app.extensions import db
-from app.auth.forms import LoginForm, ChangePasswordForm, RegistrationForm, UpdateAccountForm
-from app.auth.models import User
-from app.auth.util import save_picture
 from flask_login import login_user, current_user, logout_user, login_required
 from datetime import datetime
+from ..extensions import db
+from .forms import LoginForm, ChangePasswordForm, RegistrationForm, UpdateAccountForm
+from .models import User
+from .util import save_picture
 from . import auth_bp
 
 

@@ -1,8 +1,8 @@
-from flask import Blueprint, render_template, redirect, url_for, flash
-from app.extensions  import db
-from app.feedbacks.forms import FeedbackForm
-from app.feedbacks.models import Feedback
+from flask import render_template, redirect, url_for, flash
 from datetime import datetime
+from ..extensions  import db
+from .forms import FeedbackForm
+from .models import Feedback
 from . import feedbacks_bp
 
 

@@ -1,7 +1,7 @@
 from sqlalchemy import Integer, String, Boolean, Date
 from sqlalchemy.orm import Mapped, mapped_column
 from datetime import date
-from app.extensions import db
+from ..extensions import db
 
 class Todo(db.Model):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)

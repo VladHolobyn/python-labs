@@ -3,7 +3,7 @@ from flask_wtf.file import FileAllowed, FileField
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextAreaField
 from wtforms.validators import DataRequired, Length, Email, ValidationError, EqualTo, Regexp
 from flask_login import current_user
-from app.auth.models import User
+from .models import User
 
 class LoginForm(FlaskForm):
     email = StringField(label='Email', validators=[DataRequired("Email is required"), Email()])

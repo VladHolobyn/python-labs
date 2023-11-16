@@ -1,7 +1,7 @@
 from sqlalchemy import Integer, String, DateTime
 from sqlalchemy.orm import Mapped, mapped_column
 from datetime import datetime
-from app.extensions import db
+from ..extensions import db
 
 
 class Feedback(db.Model):

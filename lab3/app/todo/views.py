@@ -1,7 +1,7 @@
 from flask import render_template, redirect, url_for
-from app.extensions  import db
-from app.todo.forms import TodoForm
-from app.todo.models import Todo
+from ..extensions import db
+from .forms import TodoForm
+from .models import Todo
 from . import todo_bp
 
 
