@@ -7,12 +7,20 @@ from . import todo_bp
 
 @todo_bp.route('/')
 def todo_page():
-    return render_template("todo/todo.html", todo_list=Todo.query.all(), form=TodoForm())
+    form=TodoForm()
+    form.categories.choices = [(c.id, c.name) for c in Category.query.all()] 
+    return render_template("todo/todo.html", todo_list=Todo.query.all(), form=form)
  
 @todo_bp.route("/add", methods=["POST"])
 def add():
     form=TodoForm()
-    new_todo = Todo(title=form.title.data, due_date=form.due_date.data, complete=False)
+    print(form.categories.data)
+    new_todo = Todo(
+        title=form.title.data, 
+        due_date=form.due_date.data, 
+        category_id=form.categories.data,
+        complete=False
+    )
     db.session.add(new_todo)
     db.session.commit()
     return redirect(url_for("todo.todo_page"))
