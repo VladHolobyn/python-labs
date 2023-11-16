@@ -6,3 +6,7 @@ class TodoForm(FlaskForm):
     title = StringField(label='Title', validators=[DataRequired("Title is required")])
     due_date = DateField(label='Due date')
     submit = SubmitField(label="Save")
+
+class CategoryForm(FlaskForm):
+    name = StringField(label='Name', validators=[DataRequired("Name is required")])
+    submit = SubmitField(label="Add new category")

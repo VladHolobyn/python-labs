@@ -7,8 +7,12 @@
       <div class="col col-lg-9 col-xl-7">
         <div class="card rounded-3">
           <div class="card-body p-4">
-  
-            <h4 class="text-center my-3 pb-3">Python Flask Simple To Do - SQLAlchemy</h4>
+
+            <div class="text-center my-3 pb-3">
+              <h4 class="">Python Flask Simple To Do - SQLAlchemy</h4>
+              <a href="{{url_for('todo.category_page')}}">Categories</a>
+            </div>
+            
             <form class="row" action="{{url_for('todo.add')}}" method="post" style="align-items: flex-end;">
                 {{ form.csrf_token }}
                 <div class="col-4">

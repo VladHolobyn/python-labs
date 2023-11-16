@@ -1,7 +1,7 @@
-from flask import render_template, redirect, url_for
+from flask import render_template, redirect, url_for, flash
 from ..extensions import db
-from .forms import TodoForm
-from .models import Todo
+from .forms import TodoForm, CategoryForm
+from .models import Todo, Category
 from . import todo_bp
 
 
@@ -30,3 +30,37 @@ def delete(id):
     db.session.delete(todo)
     db.session.commit()
     return redirect(url_for("todo.todo_page"))
+
+@todo_bp.route('/categories')
+def category_page():
+    return render_template("todo/categories.html", categories=Category.query.all(), form=CategoryForm())
+
+@todo_bp.route("/categories", methods=["POST"])
+def add_category():
+    form=CategoryForm()
+    
+    if form.validate_on_submit():
+        try:
+            new_category = Category(name=form.name.data)
+            db.session.add(new_category)
+            db.session.commit()
+            flash('Category created!', category='success')
+        except:
+            flash('Error!', category='danger')
+            db.session.rollback()
+    else:
+        flash('Invalid form!', category='danger')
+
+    return redirect(url_for('todo.category_page'))
+
+@todo_bp.route("/categories/delete/<int:id>", methods=["POST"])
+def delete_category(id):
+    category = Category.query.get_or_404(id)
+    try:
+        db.session.delete(category)
+        db.session.commit()
+        flash('Category deleted!', category='success')
+    except:
+        flash('Error!', category='danger')
+        db.session.rollback()
+    return redirect(url_for("todo.category_page"))
