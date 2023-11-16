@@ -1,7 +1,8 @@
 from sqlalchemy import Integer, String, DateTime
 from sqlalchemy.orm import Mapped, mapped_column
 from datetime import datetime
-from .extensions import db
+from app.extensions import db
+
 
 class Feedback(db.Model):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
@@ -10,4 +11,3 @@ class Feedback(db.Model):
     text: Mapped[str] = mapped_column(String)
     mark: Mapped[int] = mapped_column(Integer)
     date: Mapped[datetime] = mapped_column(DateTime) 
-

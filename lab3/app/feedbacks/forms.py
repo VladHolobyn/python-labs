@@ -10,4 +10,3 @@ class FeedbackForm(FlaskForm):
                        validators=[DataRequired("Mark is required")])
     email = EmailField(label='User email', validators=[DataRequired("Email is required")])
     submit = SubmitField(label="Save")
-

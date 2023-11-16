@@ -1,11 +1,13 @@
-from flask import render_template, redirect, url_for, flash, current_app
-from .extensions  import db
-from app.forms import FeedbackForm
-from app.models import Feedback
+from flask import Blueprint, render_template, redirect, url_for, flash
+from app.extensions  import db
+from app.feedbacks.forms import FeedbackForm
+from app.feedbacks.models import Feedback
 from datetime import datetime
 
+feedbacks_bp = Blueprint('feedbacks', __name__, template_folder='templates')
 
-@current_app.route('/feedbacks', methods=["GET", "POST"])
+
+@feedbacks_bp.route('/', methods=["GET", "POST"])
 def feedbacks():
     form=FeedbackForm()
 
@@ -24,13 +26,13 @@ def feedbacks():
         except:
             db.session.rollback()
             flash("Something went wrong!", category="danger")
-        return redirect(url_for("feedbacks"))
+        return redirect(url_for("feedbacks.feedbacks"))
 
     feedbacks = Feedback.query.all()
-    return render_template("feedbacks.html", feedbacks=feedbacks, form=form)
+    return render_template("feedbacks/feedbacks.html", feedbacks=feedbacks, form=form)
  
-@current_app.route("/feedbacks/delete/<int:id>")
-def delete_feedback(id):
+@feedbacks_bp.route("/delete/<int:id>")
+def delete(id):
     feedback = Feedback.query.get_or_404(id)
     try:
         db.session.delete(feedback)
@@ -40,4 +42,4 @@ def delete_feedback(id):
         db.session.rollback()
         flash("Something went wrong!", category="danger")
     
-    return redirect(url_for("feedbacks"))
+    return redirect(url_for("feedbacks.feedbacks"))

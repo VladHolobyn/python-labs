@@ -4,7 +4,7 @@
 {% block content %}
     <section class="top mt-5 ">
         <h1>Feedback form</h1>
-        <form class="" action="{{url_for('feedbacks')}}" method="post" novalidate>
+        <form class="" action="{{url_for('feedbacks.feedbacks')}}" method="post" novalidate>
             {{ form.csrf_token }}
             <div class="row">
                 <div class="form-section">
@@ -43,7 +43,7 @@
                     <h6 class="card-subtitle mb-2 text-muted">{{feedback.user_email}}</h6>
                     <p class="card-text">{{feedback.text}}</p>
                     <p class="card-subtitle mb-2 text-muted">{{feedback.date.strftime('%Y-%m-%d %H:%M:%S')}}</p>
-                    <a class="card-link" href="{{url_for('delete_feedback', id=feedback.id)}}">Delete</a>
+                    <a class="card-link" href="{{url_for('feedbacks.delete', id=feedback.id)}}">Delete</a>
                 </div>
             </div>
         {% endfor %}
