@@ -21,7 +21,7 @@ def after_request(response):
 @auth.route('/register', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
-        return redirect(url_for('info_page'))
+        return redirect(url_for('auth.account'))
     
     form = RegistrationForm()
     
@@ -41,7 +41,7 @@ def register():
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for('info_page'))
+        return redirect(url_for('auth.account'))
     
     form = LoginForm()
 
@@ -51,7 +51,7 @@ def login():
         if user and user.verify_password(form.password.data): 
             login_user(user, remember=form.remember.data)
             flash("Logged in successfully!!", category="success")    
-            return redirect(url_for("info_page"))
+            return redirect(url_for('auth.account'))
 
         flash("Wrong data! Try again!", category="danger")
         return redirect(url_for("auth.login"))

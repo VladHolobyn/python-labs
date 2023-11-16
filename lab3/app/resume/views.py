@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request
 from datetime import datetime
 import os
 
-resume = Blueprint('resume', __name__,url_prefix='/resume', template_folder='templates', static_folder='static', static_url_path='resume/static')
+resume = Blueprint('resume', __name__, template_folder='templates', static_folder='static', static_url_path='resume/static')
 
 
 skills = ["java", "postgres", "spring", "hibernate", "junit", "docker"]

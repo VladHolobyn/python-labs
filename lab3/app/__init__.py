@@ -3,6 +3,7 @@ from .extensions import db, migrate, bcrypt, login_manager
 from config import config
 from app.auth.views import auth
 from app.resume.views import resume
+from app.cookies.views import cookies
 
 
 def create_app(config_name = 'default'):
@@ -17,6 +18,7 @@ def create_app(config_name = 'default'):
     with app.app_context():
         app.register_blueprint(auth, url_prefix='/')
         app.register_blueprint(resume, url_prefix='/resume')
+        app.register_blueprint(cookies, url_prefix='/cookies')
         from app import views
         return app
     

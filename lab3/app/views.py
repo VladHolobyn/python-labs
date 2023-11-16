@@ -1,46 +1,9 @@
-from flask import render_template, request, redirect, url_for, make_response, flash, current_app
+from flask import render_template, redirect, url_for, flash, current_app
 from .extensions  import db
 from app.forms import TodoForm, FeedbackForm
 from app.models import Todo, Feedback
-from flask_login import login_required
 from datetime import datetime
 
-
-@current_app.route('/info')
-@login_required
-def info_page():
-    return render_template('info.html', cookies=request.cookies)
-
-@current_app.route('/cookies', methods=["POST"])
-@login_required
-def add_cookie():
-    key = request.form.get("key")
-    value = request.form.get("value")
-    exp_date = request.form.get("date")
-
-    if key and value and exp_date:
-        response = make_response(redirect(url_for("info_page")))
-        response.set_cookie(key, value, expires=datetime.strptime(exp_date, "%Y-%m-%dT%H:%M"))
-        flash(f"Success! {key} : {value} was added.", category="success")
-        return response
-
-    flash("Failed!", category="danger")
-    return redirect(url_for("info_page"))
-
-@current_app.route('/cookies/delete', methods=["POST"])
-@current_app.route('/cookies/delete/<key>', methods=["POST"])
-@login_required
-def delete_cookie(key = None):
-    response = make_response(redirect(url_for("info_page")))
-
-    if key:
-        response.delete_cookie(key)
-        flash(f"Success! Cookie: {key} was deleted.", category="success")
-    else:
-        for key in request.cookies.keys():
-            response.delete_cookie(key)
-    
-    return response
 
 @current_app.route('/todos')
 def todos():
