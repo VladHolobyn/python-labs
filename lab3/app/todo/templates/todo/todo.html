@@ -9,7 +9,7 @@
           <div class="card-body p-4">
   
             <h4 class="text-center my-3 pb-3">Python Flask Simple To Do - SQLAlchemy</h4>
-            <form class="row" action="{{url_for('add_todo')}}" method="post" style="align-items: flex-end;">
+            <form class="row" action="{{url_for('todo.add')}}" method="post" style="align-items: flex-end;">
                 {{ form.csrf_token }}
                 <div class="col-4">
                     <div class="form-outline">
@@ -56,8 +56,8 @@
                         {% endif %}
                       </td>
                       <td>
-                        <a class="btn btn-success" href="{{url_for('update_todo', id=todo.id)}}">Update</a>
-                        <a class="btn btn-danger ms-1" href="{{url_for('delete_todo', id=todo.id)}}">Delete</a>
+                        <a class="btn btn-success" href="{{url_for('todo.update', id=todo.id)}}">Update</a>
+                        <a class="btn btn-danger ms-1" href="{{url_for('todo.delete', id=todo.id)}}">Delete</a>
                       </td>
                     </tr>
                     {% endfor %}
