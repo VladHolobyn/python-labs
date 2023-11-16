@@ -1,16 +1,15 @@
-from flask import Blueprint, render_template, request, redirect, url_for, make_response, flash
+from flask import render_template, request, redirect, url_for, make_response, flash
 from flask_login import login_required
 from datetime import datetime
+from . import cookies_bp
 
-cookies = Blueprint('cookies', __name__, template_folder='templates')
 
-
-@cookies.route('/')
+@cookies_bp.route('/')
 @login_required
 def info_page():
     return render_template('cookies/info.html', cookies=request.cookies)
 
-@cookies.route('/', methods=["POST"])
+@cookies_bp.route('/', methods=["POST"])
 @login_required
 def add():
     key = request.form.get("key")
@@ -26,8 +25,8 @@ def add():
     flash("Failed!", category="danger")
     return redirect(url_for("cookies.info_page"))
 
-@cookies.route('/delete', methods=["POST"])
-@cookies.route('/delete/<key>', methods=["POST"])
+@cookies_bp.route('/delete', methods=["POST"])
+@cookies_bp.route('/delete/<key>', methods=["POST"])
 @login_required
 def delete(key = None):
     response = make_response(redirect(url_for("cookies.info_page")))

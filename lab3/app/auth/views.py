@@ -1,14 +1,14 @@
-from flask import Blueprint, render_template, redirect, url_for, flash
+from flask import render_template, redirect, url_for, flash
 from app.extensions import db
 from app.auth.forms import LoginForm, ChangePasswordForm, RegistrationForm, UpdateAccountForm
 from app.auth.models import User
 from app.auth.util import save_picture
 from flask_login import login_user, current_user, logout_user, login_required
 from datetime import datetime
+from . import auth_bp
 
-auth = Blueprint('auth', __name__, template_folder='templates', static_folder='static', static_url_path='auth/static')
 
-@auth.after_request
+@auth_bp.after_request
 def after_request(response):
     if current_user:
         current_user.last_seen = datetime.now()
@@ -18,7 +18,7 @@ def after_request(response):
             flash('Error while update user last seen!', 'danger')
     return response
 
-@auth.route('/register', methods=['GET', 'POST'])
+@auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
         return redirect(url_for('auth.account'))
@@ -38,7 +38,7 @@ def register():
     
     return render_template('auth/register.html', form=form)
 
-@auth.route('/login', methods=['GET', 'POST'])
+@auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
         return redirect(url_for('auth.account'))
@@ -58,19 +58,19 @@ def login():
     
     return render_template('auth/login.html', form=form)
 
-@auth.route('/logout', methods=["POST"])
+@auth_bp.route('/logout', methods=["POST"])
 @login_required
 def logout():
     logout_user()
     flash("Logged out successfully!!", category="success")
     return redirect(url_for("auth.login"))
 
-@auth.route('/account', methods=['GET'])
+@auth_bp.route('/account', methods=['GET'])
 @login_required
 def account():
     return render_template('auth/account.html', password_form=ChangePasswordForm(), info_form=UpdateAccountForm())
 
-@auth.route('/change-password', methods=["POST"])
+@auth_bp.route('/change-password', methods=["POST"])
 @login_required
 def change_password():
     form = ChangePasswordForm()
@@ -93,7 +93,7 @@ def change_password():
     flash("Validation error!", category="danger")
     return render_template('auth/account.html', password_form=form, info_form=UpdateAccountForm())
 
-@auth.route('/update-user', methods=["POST"])
+@auth_bp.route('/update-user', methods=["POST"])
 @login_required
 def update_user():
     form = UpdateAccountForm(current_user=current_user)
@@ -115,7 +115,7 @@ def update_user():
     flash("Validation error!", category="danger")
     return render_template('auth/account.html', password_form=ChangePasswordForm(), info_form=form)
 
-@auth.route('/users')
+@auth_bp.route('/users')
 @login_required
 def users():
     return render_template('auth/users.html', users=User.query.all())

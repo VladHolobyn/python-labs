@@ -3,8 +3,7 @@ from app.extensions  import db
 from app.feedbacks.forms import FeedbackForm
 from app.feedbacks.models import Feedback
 from datetime import datetime
-
-feedbacks_bp = Blueprint('feedbacks', __name__, template_folder='templates')
+from . import feedbacks_bp
 
 
 @feedbacks_bp.route('/', methods=["GET", "POST"])

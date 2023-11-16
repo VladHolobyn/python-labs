@@ -1,16 +1,15 @@
-from flask import Blueprint, render_template, redirect, url_for
+from flask import render_template, redirect, url_for
 from app.extensions  import db
 from app.todo.forms import TodoForm
 from app.todo.models import Todo
+from . import todo_bp
 
-todo = Blueprint('todo', __name__, template_folder='templates')
 
-
-@todo.route('/')
+@todo_bp.route('/')
 def todo_page():
     return render_template("todo/todo.html", todo_list=Todo.query.all(), form=TodoForm())
  
-@todo.route("/add", methods=["POST"])
+@todo_bp.route("/add", methods=["POST"])
 def add():
     form=TodoForm()
     new_todo = Todo(title=form.title.data, due_date=form.due_date.data, complete=False)
@@ -18,14 +17,14 @@ def add():
     db.session.commit()
     return redirect(url_for("todo.todo_page"))
  
-@todo.route("/update/<int:id>")
+@todo_bp.route("/update/<int:id>")
 def update(id):
     todo = Todo.query.get_or_404(id)
     todo.complete = not todo.complete   
     db.session.commit()
     return redirect(url_for("todo.todo_page"))
  
-@todo.route("/delete/<int:id>")
+@todo_bp.route("/delete/<int:id>")
 def delete(id):
     todo = Todo.query.get_or_404(id)
     db.session.delete(todo)
