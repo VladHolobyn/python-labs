@@ -4,7 +4,7 @@
 {% block content %}
     <section class="top mt-5 ">
         <h1>Feedback form</h1>
-        <form class="" action="{{url_for('feedbacks')}}" method="post" novalidate>
+        <form class="" action="{{url_for('feedbacks.feedbacks')}}" method="post" novalidate>
             {{ form.csrf_token }}
             <div class="row">
                 <div class="form-section">
@@ -13,20 +13,19 @@
                     </div>
         
                     <div class="form-group mt-3">
-                        {{ render_field(form.text, class="form-control") }}
+                        {{ render_field(form.text, class="form-control", style="height: 128px;") }}
                     </div>
                 </div>
                 <div class="form-section">
                     <div class="form-group">
                         {{ render_field(form.email, class="form-control") }}
                     </div>
-                    <div class="form-group mt-3 rating">
-                        <label>Rating</label>
-                        {{ render_field(form.mark) }}
+                    <div class="form-group mt-3">
+                        {{ render_field(form.mark, class="form-check-input") }}
                     </div>
                 </div>
             </div>
-            <div class="form-group mt-4 ">
+            <div class="form-group mt-4">
                 {{ render_field(form.submit, class="btn btn-primary") }}
             </div>
       </form>
@@ -43,7 +42,7 @@
                     <h6 class="card-subtitle mb-2 text-muted">{{feedback.user_email}}</h6>
                     <p class="card-text">{{feedback.text}}</p>
                     <p class="card-subtitle mb-2 text-muted">{{feedback.date.strftime('%Y-%m-%d %H:%M:%S')}}</p>
-                    <a class="card-link" href="{{url_for('delete_feedback', id=feedback.id)}}">Delete</a>
+                    <a class="card-link" href="{{url_for('feedbacks.delete', id=feedback.id)}}">Delete</a>
                 </div>
             </div>
         {% endfor %}
