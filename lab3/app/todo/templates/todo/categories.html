@@ -4,20 +4,20 @@
 {% block content %}
 <div class="container py-5 h-100">
      <div class="row d-flex justify-content-center align-items-center h-100">
-        <div class="col col-lg-9 col-xl-7">
+        <div class="col col-lg-9 col-xl-10">
             <div class="card rounded-3">
-            <div class="card-body p-4">
-                <div class="text-center my-3 pb-3">
-                    <h4 class="">Categories</h4>
-                    <a href="{{url_for('todo.todo_page')}}">Todo</a>
-                </div>
-                <div class="row justify-content-between">
+                <div class="card-body p-4">
+                    <div class="text-center my-3">
+                        <h4 class="">Categories</h4>
+                        <a href="{{url_for('todo.todo_page')}}">Todo</a>
+                    </div>
+                    <div class="row justify-content-between mt-5">
                         <ul class="col-6 list-group">
                             {% for category in categories %}
                                 <li class="list-group-item d-flex justify-content-between align-items-center">
                                     {{category.name}}
                                     <div class="d-flex justify-content-between align-items-center">
-                                        <span class="badge bg-primary rounded-pill" style="margin-right: 15px;">{{category.todos|length}}</span>
+                                    <span class="badge bg-primary rounded-pill" style="margin-right: 15px;">{{category.todos|length}}</span>
                                         <form method="POST" action="{{url_for('todo.delete_category', id=category.id)}}">
                                             <button type="submit" class="btn btn-outline-danger">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3-fill" viewBox="0 0 16 16">
