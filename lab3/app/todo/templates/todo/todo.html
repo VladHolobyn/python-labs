@@ -13,7 +13,7 @@
               <a href="{{url_for('todo.category_page')}}">Categories</a>
             </div>
 
-            <form class="row" action="{{url_for('todo.add')}}" method="post" style="align-items: flex-end;">
+            <form class="row" method="post" style="align-items: flex-end;">
                 {{ form.csrf_token }}
                 <div class="col-3">
                     <div class="form-outline">
