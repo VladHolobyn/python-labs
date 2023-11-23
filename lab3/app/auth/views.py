@@ -4,7 +4,7 @@ from datetime import datetime
 from ..extensions import db
 from .forms import LoginForm, ChangePasswordForm, RegistrationForm, UpdateAccountForm
 from .models import User
-from .util import save_picture
+from ..util import save_thumbnail
 from . import auth_bp
 
 
@@ -100,7 +100,7 @@ def update_user():
 
     if form.validate_on_submit():
         if form.picture.data:
-            current_user.image_file = save_picture(form.picture.data)
+            current_user.image_file = save_thumbnail(form.picture.data)
         try:
             current_user.username = form.username.data
             current_user.email = form.email.data

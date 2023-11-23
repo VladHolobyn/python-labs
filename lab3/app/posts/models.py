@@ -1,6 +1,6 @@
 from sqlalchemy import Integer, String, Boolean, TIMESTAMP
 from sqlalchemy.orm import Mapped, mapped_column
-from datetime import date, datetime
+from datetime import datetime
 from ..extensions import db
 import enum
 
@@ -14,8 +14,8 @@ class Post(db.Model):
     title: Mapped[str] = mapped_column(String(100))
     text: Mapped[str] = mapped_column(String)
     image: Mapped[str] = mapped_column(String, nullable=True)
-    created: Mapped[TIMESTAMP] = mapped_column(TIMESTAMP, default=datetime.now().timestamp())
-    type: Mapped[EnumPriority] = mapped_column(db.Enum(EnumPriority), default='low') 
+    created: Mapped[TIMESTAMP] = mapped_column(TIMESTAMP, default=datetime.now())
+    type: Mapped[EnumPriority] = mapped_column(db.Enum(EnumPriority), default=EnumPriority.low.name) 
     enabled: Mapped[bool] = mapped_column(Boolean, default=False)
     user_id: Mapped[int] = mapped_column(Integer, db.ForeignKey('user.id', name='fk_user'))
 
