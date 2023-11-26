@@ -2,15 +2,13 @@ from flask import render_template, redirect, url_for, flash
 from flask_login import login_required, current_user
 from ..extensions import db
 from ..util import save_picture
-from .forms import PostForm
-from .models import Post, EnumPriority
+from .forms import PostForm, CategoryForm
+from .models import Post, EnumPriority, PostCategory
 from . import posts_bp
 
 
 @posts_bp.route('/', methods=["GET"])
 def posts_page():
-    # form=TodoForm()
-    # form.categories.choices = [(c.id, c.name) for c in Category.query.all()] 
     return render_template("posts/posts.html", posts=Post.query.all())
  
 
@@ -27,6 +25,7 @@ def post_page(id):
 @login_required
 def add_post():
     form = PostForm()
+    form.categories.choices = [(c.id, c.name) for c in PostCategory.query.all()] 
 
     if form.validate_on_submit():
         
@@ -36,7 +35,8 @@ def add_post():
             image = save_picture(form.image.data, f'{posts_bp.root_path}/static/posts_image') if form.image.data else None,
             type = EnumPriority(int(form.type.data)).name, 
             enabled = form.enabled.data,
-            user_id = current_user.id
+            user_id = current_user.id,
+            category_id = form.categories.data
         )
 
         try: 
@@ -61,6 +61,7 @@ def update_post(id):
         return redirect(url_for("posts.posts_page", id=id))
     
     form = PostForm()
+    form.categories.choices = [(c.id, c.name) for c in PostCategory.query.all()] 
 
     if form.validate_on_submit():
        
@@ -68,6 +69,7 @@ def update_post(id):
         post.text = form.text.data         
         post.type = EnumPriority(int(form.type.data)).name
         post.enabled = form.enabled.data
+        post.category_id = form.categories.data
        
         if form.image.data:
             post.image = save_picture(form.image.data, f'{posts_bp.root_path}/static/posts_image')
@@ -104,36 +106,37 @@ def delete_post(id):
     return redirect(url_for("posts.posts_page"))
 
 
-# @todo_bp.route('/categories', methods=["GET"])
-# def category_page():
-#     return render_template("todo/categories.html", categories=Category.query.all(), form=CategoryForm())
 
-# @todo_bp.route("/categories", methods=["POST"])
-# def add_category():
-#     form=CategoryForm()
+@posts_bp.route('/categories', methods=["GET"])
+def category_page():
+    return render_template("posts/categories.html", categories=PostCategory.query.all(), form=CategoryForm())
+
+@posts_bp.route("/categories/new", methods=["POST"])
+def add_category():
+    form=CategoryForm()
     
-#     if form.validate_on_submit():
-#         new_category = Category(name = form.name.data)
-#         try:
-#             db.session.add(new_category)
-#             db.session.commit()
-#             flash(f'Category({new_category.name}) created!', category='success')
-#         except:
-#             flash('Error!', category='danger')
-#             db.session.rollback()
-#     else:
-#         flash('Invalid form!', category='danger')
+    if form.validate_on_submit():
+        new_category = PostCategory(name = form.name.data)
+        try:
+            db.session.add(new_category)
+            db.session.commit()
+            flash(f'Category({new_category.name}) created!', category='success')
+        except:
+            flash('Error!', category='danger')
+            db.session.rollback()
+    else:
+        flash('Invalid form!', category='danger')
 
-#     return redirect(url_for('todo.category_page'))
+    return redirect(url_for('posts.category_page'))
 
-# @todo_bp.route("/categories/delete/<int:id>", methods=["POST"])
-# def delete_category(id):
-#     category = Category.query.get_or_404(id)
-#     try:
-#         db.session.delete(category)
-#         db.session.commit()
-#         flash(f'Category({category.id}) deleted!', category='success')
-#     except:
-#         flash('Error!', category='danger')
-#         db.session.rollback()
-#     return redirect(url_for("todo.category_page"))
+@posts_bp.route("/categories/delete/<int:id>", methods=["POST"])
+def delete_category(id):
+    category = PostCategory.query.get_or_404(id)
+    try:
+        db.session.delete(category)
+        db.session.commit()
+        flash(f'Category({category.id}) deleted!', category='success')
+    except:
+        flash('Error!', category='danger')
+        db.session.rollback()
+    return redirect(url_for("posts.category_page"))

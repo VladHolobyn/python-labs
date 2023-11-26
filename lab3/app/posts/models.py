@@ -18,11 +18,12 @@ class Post(db.Model):
     type: Mapped[EnumPriority] = mapped_column(db.Enum(EnumPriority), default=EnumPriority.low.name) 
     enabled: Mapped[bool] = mapped_column(Boolean, default=False)
     user_id: Mapped[int] = mapped_column(Integer, db.ForeignKey('user.id', name='fk_user'))
+    category_id: Mapped[int] = mapped_column(Integer, db.ForeignKey('post_category.id', name='fk_category'))
 
     def __repr__(self) -> str:
         return f"ID:{self.id} Title:{self.title} Created:{self.created} UserID: {self.user_id}"
 
-# class Category(db.Model):
-#     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-#     name: Mapped[str] = mapped_column(String)
-#     todos = db.relationship('Todo', backref='category')
+class PostCategory(db.Model):
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    name: Mapped[str] = mapped_column(String, nullable=False)
+    posts = db.relationship('Post', backref='category')

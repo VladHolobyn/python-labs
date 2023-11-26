@@ -28,6 +28,10 @@
                 {% endif %}
               </div>
               
+              <div class="mb-3">
+                <span class="badge bg-primary">{{ post.category.name }}</span>
+              </div>
+
               <h6 class="card-subtitle mb-2 text-muted">{{ post.user.email }}</h6>
 
               <p class="card-text flex-1  mt-3">{{ post.text }}</p>
