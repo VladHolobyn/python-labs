@@ -16,7 +16,11 @@ def posts_page():
 
 @posts_bp.route('/<int:id>', methods=["GET"])
 def post_page(id):
-    return render_template("posts/post.html", post=Post.query.get_or_404(id))
+    post = Post.query.get_or_404(id)
+    if not post.enabled and post.user.id != current_user.id:
+        return redirect(url_for("posts.posts_page"))
+
+    return render_template("posts/post.html", post=post)
 
 
 @posts_bp.route("/new", methods=["GET", "POST"])
@@ -39,7 +43,7 @@ def add_post():
             db.session.add(new_post)
             db.session.commit()
             flash('Post added!', category='success')
-            return redirect(url_for("posts.post_page", id=new_post.id)) ## redirecto to post page
+            return redirect(url_for("posts.post_page", id=new_post.id))
         except:
             db.session.rollback()
             flash('Error!', category='danger')
@@ -51,8 +55,12 @@ def add_post():
 
 @posts_bp.route("/update/<int:id>", methods=["GET", "POST"])
 def update_post(id):
-    form = PostForm()
     post = Post.query.get_or_404(id)
+
+    if current_user.id != post.user.id:
+        return redirect(url_for("posts.posts_page", id=id))
+    
+    form = PostForm()
 
     if form.validate_on_submit():
        
@@ -67,7 +75,7 @@ def update_post(id):
         try: 
             db.session.commit()
             flash(f'Post({post.id}) updated!', category='success')
-            return redirect(url_for("posts.update_post", id=id)) ## redirect to post page
+            return redirect(url_for("posts.post_page", id=id))
         except:
             db.session.rollback()
             flash('Error!', category='danger')    
@@ -83,14 +91,15 @@ def update_post(id):
 @posts_bp.route("/delete/<int:id>", methods=["POST"])
 def delete_post(id):
     post = Post.query.get_or_404(id)
-
-    try: 
-        db.session.delete(post)
-        db.session.commit()
-        flash(f'Post({post.id}) deleted!', category='success')
-    except:
-        db.session.rollback()
-        flash('Error!', category='danger')    
+    
+    if current_user.id == post.user.id:
+        try: 
+            db.session.delete(post)
+            db.session.commit()
+            flash(f'Post({post.id}) deleted!', category='success')
+        except:
+            db.session.rollback()
+            flash('Error!', category='danger')    
 
     return redirect(url_for("posts.posts_page"))
 

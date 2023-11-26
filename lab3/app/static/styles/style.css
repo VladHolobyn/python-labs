@@ -5,3 +5,18 @@
 .border-right {
     border-right: 1px solid #dee2e6;
 }
+
+.flex-1{
+    flex: 1;
+}
+
+.post-image{
+    height: 400px;
+    width: 100%;
+    object-fit: cover;
+}
+
+.border-bottom-1{
+    padding-bottom: 10px;
+    border-bottom: 1px solid #d1cfcf;
+}
