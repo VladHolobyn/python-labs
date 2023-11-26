@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileAllowed, FileField 
-from wtforms import StringField, TextAreaField, RadioField, BooleanField, SubmitField, SelectField
+from wtforms import StringField, TextAreaField, RadioField, BooleanField, SubmitField, SelectField, SelectMultipleField
 from wtforms.validators import DataRequired
 from .models import EnumPriority
 
@@ -15,8 +15,13 @@ class PostForm(FlaskForm):
         default='2')
     enabled= BooleanField(label='Show post')
     categories = SelectField(label="Category", coerce=int)
+    tags = SelectMultipleField(label="Tags", coerce=int)
     submit = SubmitField(label="Save")
 
 class CategoryForm(FlaskForm):
     name = StringField(label='Name', validators=[DataRequired("Name is required")])
     submit = SubmitField(label="Save category")
+
+class TagForm(FlaskForm):
+    name = StringField(label='Name', validators=[DataRequired("Name is required")])
+    submit = SubmitField(label="Save tag")

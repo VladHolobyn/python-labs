@@ -2,8 +2,8 @@ from flask import render_template, redirect, url_for, flash
 from flask_login import login_required, current_user
 from ..extensions import db
 from ..util import save_picture
-from .forms import PostForm, CategoryForm
-from .models import Post, EnumPriority, PostCategory
+from .forms import PostForm, CategoryForm, TagForm
+from .models import Post, EnumPriority, PostCategory, Tag
 from . import posts_bp
 
 
@@ -26,6 +26,9 @@ def post_page(id):
 def add_post():
     form = PostForm()
     form.categories.choices = [(c.id, c.name) for c in PostCategory.query.all()] 
+    
+    tags = Tag.query.all()
+    form.tags.choices = [(t.id, t.name) for t in tags] 
 
     if form.validate_on_submit():
         
@@ -36,7 +39,8 @@ def add_post():
             type = EnumPriority(int(form.type.data)).name, 
             enabled = form.enabled.data,
             user_id = current_user.id,
-            category_id = form.categories.data
+            category_id = form.categories.data,
+            tags = [tag for tag in tags if tag.id in form.tags.data]
         )
 
         try: 
@@ -62,6 +66,9 @@ def update_post(id):
     
     form = PostForm()
     form.categories.choices = [(c.id, c.name) for c in PostCategory.query.all()] 
+    
+    tags = Tag.query.all()
+    form.tags.choices = [(t.id, t.name) for t in tags] 
 
     if form.validate_on_submit():
        
@@ -70,6 +77,7 @@ def update_post(id):
         post.type = EnumPriority(int(form.type.data)).name
         post.enabled = form.enabled.data
         post.category_id = form.categories.data
+        post.tags = [tag for tag in tags if tag.id in form.tags.data]
        
         if form.image.data:
             post.image = save_picture(form.image.data, f'{posts_bp.root_path}/static/posts_image')
@@ -86,6 +94,8 @@ def update_post(id):
     
     form.type.data = str(post.type.value)
     form.enabled.data = post.enabled
+    form.categories.data = post.category.id
+    form.tags.data = [tag.id for tag in post.tags]
 
     return render_template("posts/update_post.html", form=form, post=post)
  
@@ -104,6 +114,7 @@ def delete_post(id):
             flash('Error!', category='danger')    
 
     return redirect(url_for("posts.posts_page"))
+
 
 
 
@@ -135,8 +146,45 @@ def delete_category(id):
     try:
         db.session.delete(category)
         db.session.commit()
-        flash(f'Category({category.id}) deleted!', category='success')
+        flash(f'Category({category.name}) deleted!', category='success')
     except:
         flash('Error!', category='danger')
         db.session.rollback()
     return redirect(url_for("posts.category_page"))
+
+
+
+
+@posts_bp.route('/tags', methods=["GET"])
+def tags_page():
+    return render_template("posts/tags.html", tags=Tag.query.all(), form=TagForm())
+
+@posts_bp.route("/tags/new", methods=["POST"])
+def add_tag():
+    form=TagForm()
+    
+    if form.validate_on_submit():
+        new_tag = Tag(name = form.name.data)
+        try:
+            db.session.add(new_tag)
+            db.session.commit()
+            flash(f'Tag(#{new_tag.name}) created!', category='success')
+        except:
+            flash('Error!', category='danger')
+            db.session.rollback()
+    else:
+        flash('Invalid form!', category='danger')
+
+    return redirect(url_for('posts.tags_page'))
+
+@posts_bp.route("/tags/delete/<int:id>", methods=["POST"])
+def delete_tag(id):
+    tag = Tag.query.get_or_404(id)
+    try:
+        db.session.delete(tag)
+        db.session.commit()
+        flash(f'Tag({tag.name}) deleted!', category='success')
+    except:
+        flash('Error!', category='danger')
+        db.session.rollback()
+    return redirect(url_for("posts.tags_page"))

@@ -24,6 +24,9 @@
   {% elif field.type == "FileField" %}
     {{ field.label(class="form-check-label") }} 
     {{ field(**kwargs)| safe }}
+  {% elif field.type == "SelectMultipleField"  %}
+    {{ field.label(class="form-label") }}
+    {{ field(placeholder="", **kwargs)| safe }}
   {% elif field.type == "SubmitField"  %}
     {{ field(**kwargs)| safe }}
   {% else %}
