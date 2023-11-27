@@ -25,3 +25,7 @@ class CategoryForm(FlaskForm):
 class TagForm(FlaskForm):
     name = StringField(label='Name', validators=[DataRequired("Name is required")])
     submit = SubmitField(label="Save tag")
+
+class SearchForm(FlaskForm):
+    category = SelectField(label="Category", coerce=int, choices=[(-1,'all')], default=-1)
+    submit = SubmitField(label="Search")

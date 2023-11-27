@@ -1,18 +1,29 @@
-from flask import render_template, redirect, url_for, flash
+from flask import render_template, redirect, url_for, flash, request
 from flask_login import login_required, current_user
+from sqlalchemy import desc
 from ..extensions import db
 from ..util import save_picture
-from .forms import PostForm, CategoryForm, TagForm
+from .forms import PostForm, CategoryForm, TagForm, SearchForm
 from .models import Post, EnumPriority, PostCategory, Tag
 from . import posts_bp
 
 
 @posts_bp.route('/', methods=["GET"])
 def posts_page():
-    posts = Post.query.all()
+    form=SearchForm()
+    form.category.choices.extend([(c.id, c.name) for c in PostCategory.query.all()])
+
+    category_id = int(request.args.get('category', -1))
+    form.category.data = category_id
+
+    if category_id > 0:
+        posts = Post.query.order_by(desc(Post.created)).filter_by(category_id=category_id)
+    else:
+        posts = Post.query.all()
+
     categ_count = PostCategory.query.count()
     teg_count = Tag.query.count()
-    return render_template("posts/posts.html", posts=posts, categ_count=categ_count, teg_count=teg_count)
+    return render_template("posts/posts.html", form=form, posts=posts, categ_count=categ_count, teg_count=teg_count)
  
 
 @posts_bp.route('/<int:id>', methods=["GET"])
