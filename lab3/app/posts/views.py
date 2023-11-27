@@ -16,14 +16,16 @@ def posts_page():
     category_id = int(request.args.get('category', -1))
     form.category.data = category_id
 
+    page = request.args.get('page', 1, type=int)
+
     if category_id > 0:
-        posts = Post.query.order_by(desc(Post.created)).filter_by(category_id=category_id)
+        pagination  = Post.query.filter(Post.category_id == category_id).order_by(desc(Post.created)).paginate(page = page, per_page=1)
     else:
-        posts = Post.query.all()
+        pagination  = Post.query.order_by(desc(Post.created)).paginate(page = page, per_page = 2)
 
     categ_count = PostCategory.query.count()
     teg_count = Tag.query.count()
-    return render_template("posts/posts.html", form=form, posts=posts, categ_count=categ_count, teg_count=teg_count)
+    return render_template("posts/posts.html", form=form, pagination=pagination , categ_count=categ_count, teg_count=teg_count)
  
 
 @posts_bp.route('/<int:id>', methods=["GET"])

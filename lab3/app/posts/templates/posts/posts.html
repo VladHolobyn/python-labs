@@ -31,7 +31,7 @@
       </form>
     </div>
     <div class="col-10">
-      {% for post in posts %}
+      {% for post in pagination.items %}
       {% if post.enabled or post.user.id == current_user.id %}
         <div class="card mb-5">
           <div class="card-body">
@@ -82,6 +82,29 @@
         </div>
       {% endif %}
       {% endfor %}
+
+      <div class="d-flex justify-content-center">
+        <ul class="pagination">
+          <li class="page-item {% if not pagination.has_prev %}disabled{% endif %}">
+            <a class="page-link" href="{{ url_for('posts.posts_page', page=pagination.prev_num, category=form.category.data) }}">«</a>
+          </li>
+  
+
+          {% for page in pagination.iter_pages(left_edge=2, left_current=1, right_current=1, right_edge=2) %}
+            <li class="page-item {% if page == pagination.page %}active{% endif %}">
+                <a class="page-link" href="{{ url_for('posts.posts_page', page=page, category=form.category.data) }}">
+                  {{ page or "..." }}
+                </a>
+            </li>
+          {% endfor %}
+  
+          <li class="page-item {% if not pagination.has_next %}disabled{% endif %}">
+            <a class="page-link" href="{{ url_for('posts.posts_page', page=pagination.next_num, category=form.category.data) }}">»</a>
+          </li>
+        </ul>
+      </div>
+
+
     </div>
   </div>
 
