@@ -20,3 +20,12 @@
     padding-bottom: 10px;
     border-bottom: 1px solid #d1cfcf;
 }
+
+.accordion-collapse.show {
+    border: 1px solid #dee2e6;
+    margin-bottom: 40px;
+}
+
+.accordion-item{
+    border: none;
+}

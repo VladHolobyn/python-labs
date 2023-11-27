@@ -9,7 +9,10 @@ from . import posts_bp
 
 @posts_bp.route('/', methods=["GET"])
 def posts_page():
-    return render_template("posts/posts.html", posts=Post.query.all())
+    posts = Post.query.all()
+    categ_count = PostCategory.query.count()
+    teg_count = Tag.query.count()
+    return render_template("posts/posts.html", posts=posts, categ_count=categ_count, teg_count=teg_count)
  
 
 @posts_bp.route('/<int:id>', methods=["GET"])
@@ -119,7 +122,7 @@ def delete_post(id):
 
 
 @posts_bp.route('/categories', methods=["GET"])
-def category_page():
+def categories_page():
     return render_template("posts/categories.html", categories=PostCategory.query.all(), form=CategoryForm())
 
 @posts_bp.route("/categories/new", methods=["POST"])
@@ -138,7 +141,7 @@ def add_category():
     else:
         flash('Invalid form!', category='danger')
 
-    return redirect(url_for('posts.category_page'))
+    return redirect(url_for('posts.categories_page'))
 
 @posts_bp.route("/categories/delete/<int:id>", methods=["POST"])
 def delete_category(id):
@@ -150,7 +153,7 @@ def delete_category(id):
     except:
         flash('Error!', category='danger')
         db.session.rollback()
-    return redirect(url_for("posts.category_page"))
+    return redirect(url_for("posts.categories_page"))
 
 
 

@@ -3,7 +3,19 @@
 {% block title %}Posts{% endblock %}
 {% block content %}
 <div class="container py-5 h-100">
-  <div class="d-flex justify-content-end mb-2" style="gap: 10px;">
+  <div class="d-flex justify-content-end mb-5" style="gap: 10px;">
+
+    <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+      <a href="{{url_for('posts.categories_page')}}" class="btn btn-outline-primary" style="padding: 5px 25px;">
+        Categories
+        <span class="badge rounded-pill bg-secondary">{{categ_count}}</span>
+      </a>
+      <a href="{{url_for('posts.tags_page')}}" class="btn btn-outline-primary" style="padding: 5px 25px;">
+        Tags
+        <span class="badge rounded-pill bg-secondary">{{teg_count}}</span>
+      </a>
+    </div>
+
     <a href="{{url_for('posts.add_post')}}" class="btn btn-success" style="padding: 5px 25px;">New</a>
   </div>
   {% for post in posts %}
