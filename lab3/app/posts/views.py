@@ -9,6 +9,7 @@ from . import posts_bp
 
 
 @posts_bp.route('/', methods=["GET"])
+@login_required
 def posts_page():
     category_id = request.args.get('category', -1, type=int)
     page = request.args.get('page', 1, type=int)
@@ -29,6 +30,7 @@ def posts_page():
  
 
 @posts_bp.route('/<int:id>', methods=["GET"])
+@login_required
 def post_page(id):
     post = Post.query.get_or_404(id)
 
@@ -69,6 +71,7 @@ def add_post():
 
 
 @posts_bp.route("/update/<int:id>", methods=["GET", "POST"])
+@login_required
 def update_post(id):
     post = Post.query.get_or_404(id)
 
@@ -108,6 +111,7 @@ def update_post(id):
  
 
 @posts_bp.route("/delete/<int:id>", methods=["POST"])
+@login_required
 def delete_post(id):
     post = Post.query.get_or_404(id)
     
@@ -126,10 +130,12 @@ def delete_post(id):
 
 
 @posts_bp.route('/categories', methods=["GET"])
+@login_required
 def categories_page():
     return render_template("posts/categories.html", categories=PostCategory.query.all(), form=CategoryForm())
 
 @posts_bp.route("/categories/new", methods=["POST"])
+@login_required
 def add_category():
     form=CategoryForm()
     
@@ -148,6 +154,7 @@ def add_category():
     return redirect(url_for('posts.categories_page'))
 
 @posts_bp.route("/categories/delete/<int:id>", methods=["POST"])
+@login_required
 def delete_category(id):
     category = PostCategory.query.get_or_404(id)
     try:
@@ -163,10 +170,12 @@ def delete_category(id):
 
 
 @posts_bp.route('/tags', methods=["GET"])
+@login_required
 def tags_page():
     return render_template("posts/tags.html", tags=Tag.query.all(), form=TagForm())
 
 @posts_bp.route("/tags/new", methods=["POST"])
+@login_required
 def add_tag():
     form=TagForm()
     
@@ -185,6 +194,7 @@ def add_tag():
     return redirect(url_for('posts.tags_page'))
 
 @posts_bp.route("/tags/delete/<int:id>", methods=["POST"])
+@login_required
 def delete_tag(id):
     tag = Tag.query.get_or_404(id)
     try:
