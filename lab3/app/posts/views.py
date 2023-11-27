@@ -10,18 +10,18 @@ from . import posts_bp
 
 @posts_bp.route('/', methods=["GET"])
 def posts_page():
+    category_id = request.args.get('category', -1, type=int)
+    page = request.args.get('page', 1, type=int)
+    
     form=SearchForm()
-    form.category.choices.extend([(c.id, c.name) for c in PostCategory.query.all()])
-
-    category_id = int(request.args.get('category', -1))
     form.category.data = category_id
 
-    page = request.args.get('page', 1, type=int)
-
+    pagination  = Post.query
+    
     if category_id > 0:
-        pagination  = Post.query.filter(Post.category_id == category_id).order_by(desc(Post.created)).paginate(page = page, per_page=1)
-    else:
-        pagination  = Post.query.order_by(desc(Post.created)).paginate(page = page, per_page = 2)
+        pagination  = pagination.filter(Post.category_id == category_id)
+    
+    pagination  = pagination.filter(db.or_(Post.enabled == True, Post.user_id == current_user.id)).order_by(desc(Post.created)).paginate(page = page, per_page = 2)
 
     categ_count = PostCategory.query.count()
     teg_count = Tag.query.count()
@@ -31,6 +31,7 @@ def posts_page():
 @posts_bp.route('/<int:id>', methods=["GET"])
 def post_page(id):
     post = Post.query.get_or_404(id)
+
     if not post.enabled and post.user.id != current_user.id:
         return redirect(url_for("posts.posts_page"))
 
@@ -41,13 +42,8 @@ def post_page(id):
 @login_required
 def add_post():
     form = PostForm()
-    form.categories.choices = [(c.id, c.name) for c in PostCategory.query.all()] 
-    
-    tags = Tag.query.all()
-    form.tags.choices = [(t.id, t.name) for t in tags] 
 
     if form.validate_on_submit():
-        
         new_post = Post(
             title = form.title.data, 
             text = form.text.data,
@@ -56,13 +52,12 @@ def add_post():
             enabled = form.enabled.data,
             user_id = current_user.id,
             category_id = form.categories.data,
-            tags = [tag for tag in tags if tag.id in form.tags.data]
+            tags = [tag for tag in Tag.query.filter(Tag.id.in_(form.tags.data)).all()]
         )
-
         try: 
             db.session.add(new_post)
             db.session.commit()
-            flash('Post added!', category='success')
+            flash('Post created!', category='success')
             return redirect(url_for("posts.post_page", id=new_post.id))
         except:
             db.session.rollback()
@@ -81,10 +76,6 @@ def update_post(id):
         return redirect(url_for("posts.posts_page", id=id))
     
     form = PostForm()
-    form.categories.choices = [(c.id, c.name) for c in PostCategory.query.all()] 
-    
-    tags = Tag.query.all()
-    form.tags.choices = [(t.id, t.name) for t in tags] 
 
     if form.validate_on_submit():
        
@@ -93,14 +84,14 @@ def update_post(id):
         post.type = EnumPriority(int(form.type.data)).name
         post.enabled = form.enabled.data
         post.category_id = form.categories.data
-        post.tags = [tag for tag in tags if tag.id in form.tags.data]
+        post.tags = [tag for tag in Tag.query.filter(Tag.id.in_(form.tags.data)).all()]
        
         if form.image.data:
             post.image = save_picture(form.image.data, f'{posts_bp.root_path}/static/posts_image')
-       
+
         try: 
             db.session.commit()
-            flash(f'Post({post.id}) updated!', category='success')
+            flash(f'Post ({post.title}) updated!', category='success')
             return redirect(url_for("posts.post_page", id=id))
         except:
             db.session.rollback()
@@ -124,7 +115,7 @@ def delete_post(id):
         try: 
             db.session.delete(post)
             db.session.commit()
-            flash(f'Post({post.id}) deleted!', category='success')
+            flash(f'Post ({post.title}) deleted!', category='success')
         except:
             db.session.rollback()
             flash('Error!', category='danger')    
@@ -147,7 +138,7 @@ def add_category():
         try:
             db.session.add(new_category)
             db.session.commit()
-            flash(f'Category({new_category.name}) created!', category='success')
+            flash(f'Category ({new_category.name}) created!', category='success')
         except:
             flash('Error!', category='danger')
             db.session.rollback()
@@ -162,7 +153,7 @@ def delete_category(id):
     try:
         db.session.delete(category)
         db.session.commit()
-        flash(f'Category({category.name}) deleted!', category='success')
+        flash(f'Category ({category.name}) deleted!', category='success')
     except:
         flash('Error!', category='danger')
         db.session.rollback()
@@ -184,7 +175,7 @@ def add_tag():
         try:
             db.session.add(new_tag)
             db.session.commit()
-            flash(f'Tag(#{new_tag.name}) created!', category='success')
+            flash(f'Tag (#{new_tag.name}) created!', category='success')
         except:
             flash('Error!', category='danger')
             db.session.rollback()
@@ -199,7 +190,7 @@ def delete_tag(id):
     try:
         db.session.delete(tag)
         db.session.commit()
-        flash(f'Tag({tag.name}) deleted!', category='success')
+        flash(f'Tag (#{tag.name}) deleted!', category='success')
     except:
         flash('Error!', category='danger')
         db.session.rollback()
