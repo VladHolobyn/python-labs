@@ -2,3 +2,4 @@
 __pycache__
 instance
 app/auth/static/profile_pics
+app/posts/static/posts_image

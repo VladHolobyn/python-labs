@@ -16,6 +16,7 @@ class User(db.Model, UserMixin):
     password_hash: Mapped[str] = mapped_column(String(60), nullable=False)
     last_seen: Mapped[datetime] = mapped_column(DateTime, nullable=True, default=datetime.now())
     about_me: Mapped[str] = mapped_column(String, nullable=True)
+    posts = db.relationship('Post', backref='user')
 
     def __init__(self, name, email, password):
         self.username = name
