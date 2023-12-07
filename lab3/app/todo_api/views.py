@@ -23,12 +23,15 @@ def get_todo(id):
     
     return jsonify(TodoMapper.toDto(todo))
  
+
 @todo_api_bp.route("/", methods=["POST"])
 def create_todo():
-    data = request.get_json()
 
-    isValid, response = TodoValidator.validate(data)    
+    data = request.get_json()
+    if not data:
+        return jsonify({"message": "No data provided"}), 400
     
+    isValid, response = TodoValidator.validateForCreate(data)
     if not isValid:
         return jsonify({'message': response['message']}),  response['status_code']
 
@@ -43,4 +46,6 @@ def create_todo():
     except:
         db.session.rollback()
         return jsonify({"message": "Error"}), 500
+
+
 
