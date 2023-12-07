@@ -5,6 +5,7 @@ from app.auth.views import auth_bp
 from app.resume.views import resume_bp
 from app.cookies.views import cookies_bp
 from app.todo.views import todo_bp
+from app.todo_api.views import todo_api_bp
 from app.feedbacks.views import feedbacks_bp
 from app.posts.views import posts_bp
 
@@ -25,5 +26,6 @@ def create_app(config_name = 'default'):
         app.register_blueprint(todo_bp, url_prefix='/todo')
         app.register_blueprint(feedbacks_bp, url_prefix='/feedbacks')
         app.register_blueprint(posts_bp, url_prefix='/posts')
+        app.register_blueprint(todo_api_bp, url_prefix='/api/todos')
         return app
     
