@@ -73,3 +73,19 @@ def update_todo(id):
         db.session.rollback()
         return jsonify({"message": "Error"}), 500
  
+
+@todo_api_bp.route('/<int:id>', methods=["DELETE"])
+def delete_todo(id):
+    
+    todo = Todo.query.filter_by(id=id).first()
+    if not todo:
+        return jsonify({"message": f"Todo with id:{id} not found"}), 404
+    
+    try: 
+        db.session.delete(todo)
+        db.session.commit()
+        return jsonify({"message": "Todo has been deleted"}), 204
+    except:
+        db.session.rollback()
+        return jsonify({"message": "Error"}), 500
+    
