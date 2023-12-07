@@ -1,9 +1,9 @@
 from flask import  request, jsonify
-from app.todo.models import Todo, Category
+from app.todo.models import Todo
 from ..extensions import db
-from . import todo_api_bp
 from .mappers import TodoMapper
 from .validators import TodoValidator
+from . import todo_api_bp
 
 
 @todo_api_bp.route('/', methods=["GET"])
@@ -84,7 +84,7 @@ def delete_todo(id):
     try: 
         db.session.delete(todo)
         db.session.commit()
-        return jsonify({"message": "Todo has been deleted"}), 204
+        return '', 204
     except:
         db.session.rollback()
         return jsonify({"message": "Error"}), 500
