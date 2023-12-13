@@ -4,6 +4,10 @@ import os
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
+ACCESS_EXPIRES = {
+    'access': timedelta(minutes=1),
+    'refresh': timedelta(days=1)
+}
 
 class Config(object):
     WTF_CSRF_ENABLED = True
@@ -11,7 +15,8 @@ class Config(object):
     DEVELOPMENT = False
     SECRET_KEY = 'secret'
     JWT_SECRET_KEY = "super-secret" 
-    JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=1)
+    JWT_ACCESS_TOKEN_EXPIRES = ACCESS_EXPIRES['access']
+    JWT_REFRESH_TOKEN_EXPIRES = ACCESS_EXPIRES['refresh']
     FLASK_SECRET = SECRET_KEY
 
 class DevConfig(Config):
