@@ -1,4 +1,7 @@
+from datetime import timedelta
 import os
+
+
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 
@@ -7,6 +10,8 @@ class Config(object):
     DEBUG = False
     DEVELOPMENT = False
     SECRET_KEY = 'secret'
+    JWT_SECRET_KEY = "super-secret" 
+    JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=1)
     FLASK_SECRET = SECRET_KEY
 
 class DevConfig(Config):

@@ -1,4 +1,5 @@
 from flask import  request, jsonify
+from flask_jwt_extended import jwt_required
 from app.todo.models import Todo
 from ..extensions import db
 from .mappers import TodoMapper
@@ -7,6 +8,7 @@ from . import todo_api_bp
 
 
 @todo_api_bp.route('/', methods=["GET"])
+@jwt_required()
 def get_all_todos():
     todos = Todo.query.all()
     todos_dict = [TodoMapper.toDto(todo) for todo in todos]
@@ -15,6 +17,7 @@ def get_all_todos():
 
 
 @todo_api_bp.route('/<int:id>', methods=["GET"])
+@jwt_required()
 def get_todo(id):
     todo = Todo.query.filter_by(id=id).first()
 
@@ -25,6 +28,7 @@ def get_todo(id):
  
 
 @todo_api_bp.route("/", methods=["POST"])
+@jwt_required()
 def create_todo():
 
     data = request.get_json()
@@ -49,6 +53,7 @@ def create_todo():
 
 
 @todo_api_bp.route('/<int:id>', methods=["PUT"])
+@jwt_required()
 def update_todo(id):  
 
     data = request.get_json()
@@ -75,6 +80,7 @@ def update_todo(id):
  
 
 @todo_api_bp.route('/<int:id>', methods=["DELETE"])
+@jwt_required()
 def delete_todo(id):
     
     todo = Todo.query.filter_by(id=id).first()

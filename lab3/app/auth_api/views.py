@@ -1,5 +1,6 @@
 from flask import jsonify
 from flask_httpauth import HTTPBasicAuth
+from flask_jwt_extended import create_access_token
 from ..auth.models import User
 from . import auth_api_bp
 
@@ -20,7 +21,8 @@ def auth_error(status):
 @auth_api_bp.route('/login', methods=['POST'])
 @basic_auth.login_required
 def login():
-    return jsonify(message = "Hello, {}!".format(basic_auth.current_user())) 
+    access_token = create_access_token(identity=basic_auth.current_user())
+    return jsonify(access_token=access_token)
 
 # @auth_api_bp.route('/logout', methods=["POST"])
 # @login_required
