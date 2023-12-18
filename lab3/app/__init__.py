@@ -9,6 +9,7 @@ from app.todo.views import todo_bp
 from app.todo_api.views import todo_api_bp
 from app.feedbacks.views import feedbacks_bp
 from app.posts.views import posts_bp
+from app.user_api import user_api_bp
 
 
 def create_app(config_name = 'default'):
@@ -30,5 +31,6 @@ def create_app(config_name = 'default'):
         app.register_blueprint(posts_bp, url_prefix='/posts')
         app.register_blueprint(todo_api_bp, url_prefix='/api/todos')
         app.register_blueprint(auth_api_bp, url_prefix='/api/auth')
+        app.register_blueprint(user_api_bp, url_prefix='/api')
         return app
     
