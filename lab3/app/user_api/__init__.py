@@ -11,4 +11,4 @@ api.add_resource(UserApi, '/users/<int:id>')
 
 @user_api_bp.errorhandler(ValidationError)
 def handle_marshmallow_error(e):
-    return jsonify(e.messages), 400
+    return jsonify(e.messages), 400  
