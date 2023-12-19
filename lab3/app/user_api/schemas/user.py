@@ -1,12 +1,14 @@
 from marshmallow import validate, validates_schema, ValidationError
-from marshmallow.fields import String
-from ...extensions import ma
+from marshmallow.fields import String, Nested, List
 from app.auth.models import User
+from ...extensions import ma
+from .post import PostSchema
 
 class UserSchema(ma.SQLAlchemyAutoSchema):
     username = String(required=True, validate=[validate.Length(min=4, max=14), validate.Regexp(regex='^[A-Za-z][A-Za-z0-9_.]*$')])
     email = String(required=True, validate=[validate.Email()])
     password = String(load_only=True, required=True, validate=[validate.Length(min=7)])
+    posts = List(Nested(PostSchema(only=("id","title","created", "category.name"))))
 
     @validates_schema
     def validate_username(self, data, **kwargs):
