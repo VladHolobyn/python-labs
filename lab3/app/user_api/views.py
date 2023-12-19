@@ -1,47 +1,48 @@
+from flask import request
 from flask_restful import Resource
+from flask_restful import reqparse
 from app.auth.models import User
 from ..extensions import db
-from flask_restful import reqparse
-
-
-parser_create_user = reqparse.RequestParser()
-parser_create_user.add_argument('username', type=str, required=True, help='Username is required')
-parser_create_user.add_argument('email', type=str, required=True, help='Email is required')
-parser_create_user.add_argument('password', type=str, required=True, help='Password is required')
-parser_create_user.add_argument('confirm_password', type=str, required=True, help='Confirem password is required')
+from .schemas.user import UserSchema
 
 
 class UsersApi(Resource):
     def get(self):
-        # returns pageable users
-        pass
+        schema = UserSchema(many=True)
+        users = User.query.all()
+        return {"users": schema.dump(users)}
     
     def post(self):
-        # Creates new user
-        pass
-        # data = parser_create_user.parse_args()
-        # username = data.get('username')
-        # email = data.get('email')
-        # password = data.get('password')
-        # confirm_password = data.get('confirm_password')
+        schema = UserSchema()
 
-        # new_user = User(name=username, password=password, email=email)
+        new_user = schema.load(request.json)
+        db.session.add(new_user)
+        db.session.commit()
 
-        # db.session.add(new_user)
-        # db.session.commit()
-
-        # return {'message': 'User has been created'}, 201
+        return {'user': schema.dump(new_user)}, 201
 
 class UserApi(Resource):
-    def get(self):
-        # returns user by id
-        pass
-    
-    def put(self):
-        # updates user
-        pass
-    
-    def delete(self):
-        # delete user
-        pass
+    def get(self, id):
+        schema = UserSchema()
+        user = User.query.filter_by(id=id).first_or_404()
+        return {"user": schema.dump(user)}
 
+    
+    def put(self, id):
+        schema = UserSchema(partial=True)
+        user = User.query.filter_by(id=id).first_or_404()
+        
+        user = schema.load(request.json, instance=user)
+        db.session.add(user)
+        db.session.commit()
+        
+        return {"user": schema.dump(user)}
+    
+    def delete(self, id):
+        schema = UserSchema()
+        user = User.query.filter_by(id=id).first_or_404()
+        
+        db.session.delete(user)
+        db.session.commit()
+        
+        return {"user": schema.dump(user)}
