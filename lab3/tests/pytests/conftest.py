@@ -19,7 +19,7 @@ def client():
 
 @pytest.fixture(scope='module')
 def default_user():
-    user = User(name='John Doe', email='john.doe@gmail.com', password='password')
+    user = User(username='John Doe', email='john.doe@gmail.com', password='password')
     yield user
 
 @pytest.fixture(scope='module')
@@ -45,7 +45,7 @@ def posts(categories, tags):
 @pytest.fixture(scope='module')
 def init_database(default_user, posts, categories):
     
-    user2 = User(name='Test user', email='test@gmail.com', password='password')
+    user2 = User(username='Test user', email='test@gmail.com', password='password')
     
     user2.posts = [posts[2]]
     default_user.posts = [posts[0], posts[1]]

@@ -1,5 +1,5 @@
 from flask import Flask
-from .extensions import db, migrate, bcrypt, login_manager, jwt_manager
+from .extensions import db, migrate, bcrypt, login_manager, jwt_manager, ma
 from config import config
 from app.auth.views import auth_bp
 from app.auth_api.views import auth_api_bp
@@ -19,6 +19,7 @@ def create_app(config_name = 'default'):
     db.init_app(app)
     migrate.init_app(app, db)
     bcrypt.init_app(app)
+    ma.init_app(app)
     login_manager.init_app(app)
     jwt_manager.init_app(app)
 
