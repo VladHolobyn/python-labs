@@ -9,8 +9,11 @@ from .schemas.user import UserSchema
 class UsersApi(Resource):
     def get(self):
         schema = UserSchema(many=True)
-        users = User.query.all()
-        return {"users": schema.dump(users)}
+        page = request.args.get('page', 1, type=int)
+        
+        users = User.query.paginate(page = page, per_page = 2)
+
+        return {'users': schema.dump(users), 'page': users.page, 'pages': users.pages}
     
     def post(self):
         schema = UserSchema()
