@@ -12,6 +12,7 @@ ACCESS_EXPIRES = {
 class Config(object):
     WTF_CSRF_ENABLED = True
     DEBUG = False
+    TESTING = False
     DEVELOPMENT = False
     SECRET_KEY = 'secret'
     JWT_SECRET_KEY = "super-secret" 
@@ -34,7 +35,8 @@ class ProdConfig(Config):
     FLASK_SECRET = SECRET_KEY
 
 class TestConfig(Config):
-    DEBUG = False
+    TESTING = True
+    DEBUG = True
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, "instance\\test-db.sqlite")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     WTF_CSRF_ENABLED = False
