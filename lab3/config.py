@@ -5,7 +5,7 @@ import os
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 ACCESS_EXPIRES = {
-    'access': timedelta(minutes=1),
+    'access': timedelta(hours=1),
     'refresh': timedelta(days=1)
 }
 
@@ -23,10 +23,15 @@ class DevConfig(Config):
     DEVELOPMENT = True
     DEBUG = True
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, "instance\\site.sqlite")
+    REDIS_DB_URI = 'redis://localhost:6379'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 class ProdConfig(Config):
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, "instance\\site.sqlite")
+    SQLALCHEMY_DATABASE_URI = os.environ.get('FLASK_DB_URL')
+    REDIS_DB_URI = os.environ.get('REDIS_DB_URL')
+    SECRET_KEY = os.environ.get('SECRET_KEY')
+    JWT_SECRET_KEY = os.environ.get('JWT_SECRET_KEY')
+    FLASK_SECRET = SECRET_KEY
 
 class TestConfig(Config):
     DEBUG = False
