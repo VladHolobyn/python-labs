@@ -8,7 +8,7 @@ class AuthTest(BaseTest):
 
     def setUp(self):
         super().setUp()
-        db.session.add(User(name='user', email='user@gmail.com', password='password'))
+        db.session.add(User(username='user', email='user@gmail.com', password='password'))
         db.session.commit()
         
     def test_view_login_page(self):

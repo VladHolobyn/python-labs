@@ -18,8 +18,8 @@ class User(db.Model, UserMixin):
     about_me: Mapped[str] = mapped_column(String, nullable=True)
     posts = db.relationship('Post', backref='user')
 
-    def __init__(self, name, email, password):
-        self.username = name
+    def __init__(self, username, email, password):
+        self.username = username
         self.email = email
         self.password = password
 
