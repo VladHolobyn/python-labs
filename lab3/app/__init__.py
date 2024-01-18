@@ -1,6 +1,7 @@
 from flask import Flask
-from .extensions import db, migrate, bcrypt, login_manager, jwt_manager, ma
+from .extensions import db, migrate, bcrypt, login_manager, jwt_manager, ma, admin
 from config import config
+from app.admin.views import AdminView
 from app.auth.views import auth_bp
 from app.auth_api.views import auth_api_bp
 from app.resume.views import resume_bp
@@ -23,6 +24,8 @@ def create_app(config_name = 'default'):
     ma.init_app(app)
     login_manager.init_app(app)
     jwt_manager.init_app(app)
+
+    admin.init_app(app, index_view=AdminView())
 
     with app.app_context():
         app.register_blueprint(auth_bp, url_prefix='/')

@@ -6,6 +6,7 @@ from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 from flask_jwt_extended import JWTManager
 from flask_marshmallow import Marshmallow
+from flask_admin import Admin
 from config import config
 
 db = SQLAlchemy()
@@ -16,6 +17,7 @@ jwt_manager = JWTManager()
 login_manager = LoginManager()
 login_manager.login_view = 'auth.login'
 login_manager.login_message_category = 'info'
+admin = Admin(name='Flask Lab 16', template_mode='bootstrap3')
 
 url = config.get(os.environ.get('CONFIG','default')).REDIS_DB_URI
 jwt_redis_blocklist = redis.from_url(url)
