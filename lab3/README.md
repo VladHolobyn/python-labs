@@ -1,5 +1,10 @@
 # Flask app 
 Link: https://flask-pnu.onrender.com/login
+
+#### Test admin user: 
+* test@pnu.edu.ua
+* 1234567
+
 ### Env variables
  
 | Name | Description  | 
