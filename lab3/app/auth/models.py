@@ -1,4 +1,4 @@
-from sqlalchemy import Integer, String, DateTime, LargeBinary
+from sqlalchemy import Integer, String, DateTime, LargeBinary, Boolean
 from sqlalchemy.orm import Mapped, mapped_column
 from flask_login import UserMixin
 from datetime import datetime
@@ -12,6 +12,7 @@ class User(db.Model, UserMixin):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     username: Mapped[str] = mapped_column(String(20), unique=True, nullable=False)
     email: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
+    admin: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     image_file: Mapped[str] = mapped_column(String(20), nullable=False, default='default.png')
     password_hash: Mapped[str] = mapped_column(LargeBinary, nullable=False)
     last_seen: Mapped[datetime] = mapped_column(DateTime, nullable=True, default=datetime.now())
@@ -22,6 +23,9 @@ class User(db.Model, UserMixin):
         self.username = username
         self.email = email
         self.password = password
+
+    def is_admin(self):
+        return self.admin
 
     @property
     def password(self):
